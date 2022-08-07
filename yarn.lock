@@ -247,6 +247,11 @@ anymatch@~3.1.2:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
+apl-viewhost-web@^2022.1.0:
+  version "2022.1.0"
+  resolved "https://registry.yarnpkg.com/apl-viewhost-web/-/apl-viewhost-web-2022.1.0.tgz#d50ede583c64bb22c94a315a915a554c56f6e2f9"
+  integrity sha512-7483M7dEtLykmoV3UlshhSnyMFn6Qh9cE+m3sbCTY29kxX1PLoUxA334BAWxFgV330OvO1ql7gi7FaPko+IVkQ==
+
 argparse@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/argparse/-/argparse-2.0.1.tgz#246f50f3ca78a3240f6c997e8a9bd1eac49e4b38"
