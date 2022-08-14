@@ -37,13 +37,13 @@
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
     "@vscode/test-electron": "^2.1.5",
-    "apl-viewhost-web": "^2022.1.0",
     "eslint": "^8.20.0",
     "glob": "^8.0.3",
     "mocha": "^10.0.0",
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "apl-suggester": "^2022.1.0"
+    "apl-suggester": "^2022.1.0",
+    "apl-viewhost-web": "^2022.1.0"
   }
 }
