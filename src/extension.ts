@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { Uri } from "vscode";
+import { getDefaultViewport, IViewport, ViewportShape } from "apl-suggester";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log(
@@ -42,11 +43,9 @@ export function activate(context: vscode.ExtensionContext) {
           webView.webview.postMessage({
             document: JSON.stringify(documentJson["document"]),
             datasources: JSON.stringify(documentJson["datasources"]),
-            viewport: JSON.stringify({
-              width: 1024,
-              height: 600,
-              dpi: 96,
-            }),
+            viewport: JSON.stringify(
+              viewportCharacteristicsFromViewPort(getDefaultViewport())
+            ),
           });
         } catch (e) {
           vscode.window.showInformationMessage("Your json seems to be invalid");
@@ -81,6 +80,22 @@ function buildHtml(aplPreviewPath: any, aplWebviewHostPath: any) {
      <div></div>
     </body>
   </html>`;
+}
+
+function dpToPixel(dp: number, dpi: number): number {
+  return Math.round((dpi / 160) * dp);
+}
+
+// viewport in apl-viewhost-web must be IViewportCharacteristics type.
+// This method is to convert IViewportCharacteristics from IViewport
+// https://github.com/alexa/apl-viewhost-web/blob/master/js/apl-html/src/APLRenderer.ts#L60
+function viewportCharacteristicsFromViewPort(targetViewport: IViewport): any {
+  return {
+    isRound: targetViewport.shape === ViewportShape.ROUND,
+    height: dpToPixel(targetViewport.height, targetViewport.dpi),
+    width: dpToPixel(targetViewport.width, targetViewport.dpi),
+    dpi: targetViewport.dpi,
+  };
 }
 
 export function deactivate() {}
