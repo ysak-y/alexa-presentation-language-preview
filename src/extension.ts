@@ -8,10 +8,6 @@ import {
 } from "apl-suggester";
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log(
-    'Congratulations, your extension "alexa-presentation-language-preview" is now active!'
-  );
-
   let disposable = vscode.commands.registerCommand(
     "alexa-presentation-language-preview.helloWorld",
     () => {
