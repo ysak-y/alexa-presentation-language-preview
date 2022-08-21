@@ -21,6 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
       );
 
+      let documentJson: any;
       const aplPreviewJsLocation = Uri.joinPath(
         context.extensionUri,
         "assets/aplPreview.js"
@@ -42,7 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
             case "initialize":
               const currentDocument = textEditor?.document;
               if (currentDocument) {
-                const documentJson = JSON.parse(currentDocument.getText());
+                documentJson = JSON.parse(currentDocument.getText());
 
                 webView.webview.postMessage({
                   document: JSON.stringify(documentJson["document"]),
@@ -65,7 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.workspace.onDidSaveTextDocument((document) => {
         try {
           if (document.uri === textEditor?.document.uri) {
-            const documentJson = JSON.parse(document.getText());
+            documentJson = JSON.parse(document.getText());
 
             webView.webview.postMessage({
               document: JSON.stringify(documentJson["document"]),
