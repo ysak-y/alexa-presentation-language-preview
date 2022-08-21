@@ -33,20 +33,45 @@ export function activate(context: vscode.ExtensionContext) {
         webView.webview.asWebviewUri(aplPreviewJsLocation);
       const viewhostWebJsUrl =
         webView.webview.asWebviewUri(viewhostWebLocation);
+      const textEditor = vscode.window.activeTextEditor;
 
       webView.webview.html = buildHtml(aplPreviewJsUrl, viewhostWebJsUrl);
+      webView.webview.onDidReceiveMessage(
+        (message) => {
+          switch (message.command) {
+            case "initialize":
+              const currentDocument = textEditor?.document;
+              if (currentDocument) {
+                const documentJson = JSON.parse(currentDocument.getText());
+
+                webView.webview.postMessage({
+                  document: JSON.stringify(documentJson["document"]),
+                  datasources: JSON.stringify(documentJson["datasources"]),
+                  viewport: JSON.stringify(
+                    viewportCharacteristicsFromViewPort(getDefaultViewport())
+                  ),
+                });
+              }
+              return;
+          }
+        },
+        undefined,
+        context.subscriptions
+      );
 
       vscode.workspace.onDidSaveTextDocument((document) => {
         try {
-          const documentJson = JSON.parse(document.getText());
+          if (document.uri === textEditor?.document.uri) {
+            const documentJson = JSON.parse(document.getText());
 
-          webView.webview.postMessage({
-            document: JSON.stringify(documentJson["document"]),
-            datasources: JSON.stringify(documentJson["datasources"]),
-            viewport: JSON.stringify(
-              viewportCharacteristicsFromViewPort(getDefaultViewport())
-            ),
-          });
+            webView.webview.postMessage({
+              document: JSON.stringify(documentJson["document"]),
+              datasources: JSON.stringify(documentJson["datasources"]),
+              viewport: JSON.stringify(
+                viewportCharacteristicsFromViewPort(getDefaultViewport())
+              ),
+            });
+          }
         } catch (e) {
           vscode.window.showInformationMessage("Your json seems to be invalid");
         }

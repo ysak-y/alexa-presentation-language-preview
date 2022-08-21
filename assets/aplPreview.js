@@ -41,12 +41,18 @@ async function loadAplDoc(apl, datasources, deviceConfig, onSendEvent) {
 }
 
 window.onload = function () {
-  AplRenderer.initEngine().catch((e) => {
-    vscode.postMessage({
-      command: "alert",
-      text: `Error happens! ${e.message}`,
+  AplRenderer.initEngine()
+    .then(() => {
+      vscode.postMessage({
+        command: "initialize",
+      });
+    })
+    .catch((e) => {
+      vscode.postMessage({
+        command: "alert",
+        text: `Error happens! ${e.message}`,
+      });
     });
-  });
 };
 
 window.addEventListener("message", (event) => {
