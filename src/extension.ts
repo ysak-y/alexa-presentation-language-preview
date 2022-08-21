@@ -53,6 +53,9 @@ export function activate(context: vscode.ExtensionContext) {
                 });
               }
               return;
+            case "alert":
+              vscode.window.showErrorMessage(message.text);
+              return;
           }
         },
         undefined,
