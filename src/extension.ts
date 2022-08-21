@@ -9,7 +9,7 @@ import {
 
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
-    "alexa-presentation-language-preview.helloWorld",
+    "alexa-presentation-language-preview.previewApl",
     () => {
       const webView = vscode.window.createWebviewPanel(
         "aplView",

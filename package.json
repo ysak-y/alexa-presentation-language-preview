@@ -10,14 +10,14 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:alexa-presentation-language-preview.helloWorld"
+    "onCommand:alexa-presentation-language-preview.previewApl"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "alexa-presentation-language-preview.helloWorld",
-        "title": "Hello World"
+        "command": "alexa-presentation-language-preview.previewApl",
+        "title": "Preview Amazon Presentation Language"
       }
     ]
   },
