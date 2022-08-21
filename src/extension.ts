@@ -1,6 +1,11 @@
 import * as vscode from "vscode";
 import { Uri } from "vscode";
-import { getDefaultViewport, IViewport, ViewportShape } from "apl-suggester";
+import {
+  getDefaultViewport,
+  getViewportProfiles,
+  IViewport,
+  ViewportShape,
+} from "apl-suggester";
 
 export function activate(context: vscode.ExtensionContext) {
   console.log(
@@ -30,11 +35,69 @@ export function activate(context: vscode.ExtensionContext) {
         context.extensionUri,
         "/node_modules/apl-viewhost-web/index.js"
       );
+      let currentViewport = getDefaultViewport();
       const aplPreviewJsUrl =
         webView.webview.asWebviewUri(aplPreviewJsLocation);
       const viewhostWebJsUrl =
         webView.webview.asWebviewUri(viewhostWebLocation);
       const textEditor = vscode.window.activeTextEditor;
+
+      vscode.commands.registerCommand(
+        "alexa-presentation-language-preview.selectViewports",
+        async () => {
+          const viewportProfiles = getViewportProfiles()
+            .map((v) => {
+              return {
+                label: v.name,
+                description: `${v.exampleDevices.length} profiles`,
+              } as vscode.QuickPickItem;
+            })
+            .valueSeq()
+            .toArray();
+
+          const selectedViewportName = await vscode.window.showQuickPick(
+            viewportProfiles
+          );
+
+          if (selectedViewportName) {
+            const newViewportProfile = getViewportProfiles().find(
+              (v) => v.name === selectedViewportName.label
+            );
+
+            const viewports = newViewportProfile?.exampleDevices.map((d) => {
+              return {
+                label: d.name,
+              } as vscode.QuickPickItem;
+            });
+
+            if (viewports) {
+              const selectedNewViewport = await vscode.window.showQuickPick(
+                viewports
+              );
+              const newViewport = newViewportProfile?.exampleDevices.find(
+                (d) => d.name === selectedNewViewport?.label
+              );
+              if (newViewport) {
+                currentViewport = newViewport;
+                webView.webview.postMessage({
+                  document: JSON.stringify(documentJson["document"]),
+                  datasources: JSON.stringify(documentJson["datasources"]),
+                  viewport: JSON.stringify(
+                    viewportCharacteristicsFromViewPort(newViewport)
+                  ),
+                });
+                statusBarItem.text = selectedViewportName.label;
+              }
+            }
+          }
+        }
+      );
+      const statusBarItem = vscode.window.createStatusBarItem();
+      statusBarItem.command =
+        "alexa-presentation-language-preview.selectViewports";
+      statusBarItem.name = "Select Viewport Profile";
+      statusBarItem.text = getDefaultViewport().name;
+      statusBarItem.show();
 
       webView.webview.html = buildHtml(aplPreviewJsUrl, viewhostWebJsUrl);
       webView.webview.onDidReceiveMessage(
@@ -49,7 +112,7 @@ export function activate(context: vscode.ExtensionContext) {
                   document: JSON.stringify(documentJson["document"]),
                   datasources: JSON.stringify(documentJson["datasources"]),
                   viewport: JSON.stringify(
-                    viewportCharacteristicsFromViewPort(getDefaultViewport())
+                    viewportCharacteristicsFromViewPort(currentViewport)
                   ),
                 });
               }
@@ -72,7 +135,7 @@ export function activate(context: vscode.ExtensionContext) {
               document: JSON.stringify(documentJson["document"]),
               datasources: JSON.stringify(documentJson["datasources"]),
               viewport: JSON.stringify(
-                viewportCharacteristicsFromViewPort(getDefaultViewport())
+                viewportCharacteristicsFromViewPort(currentViewport)
               ),
             });
           }
