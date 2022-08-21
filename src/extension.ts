@@ -6,6 +6,7 @@ import {
   IViewport,
   ViewportShape,
 } from "apl-suggester";
+import { buildPreviewHtml } from "./utils/buildPreviewHtml";
 
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
@@ -95,7 +96,7 @@ export function activate(context: vscode.ExtensionContext) {
       statusBarItem.text = getDefaultViewport().name;
       statusBarItem.show();
 
-      webView.webview.html = buildHtml(
+      webView.webview.html = buildPreviewHtml(
         aplPreviewJsUrl.toString(),
         viewhostWebJsUrl.toString()
       );
@@ -146,31 +147,6 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(disposable);
-}
-
-function buildHtml(aplPreviewPath: string, aplWebviewHostPath: string) {
-  return `
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <meta http-equiv="Content-Security-Policy"
-      content="default-src https: data:; img-src https: data:; script-src vscode-resource: https: data: 'unsafe-inline' 'unsafe-eval'; style-src vscode-resource: 'unsafe-inline';" />
-      <title>APL Preview</title>
-      <script>window.AplRenderer || document.write('<script src="${aplWebviewHostPath}"><\\/script>')</script>
-      <script src="${aplPreviewPath}"></script>
-    </head>
-    <style>
-      body {
-        font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-      }
-      :focus {
-        outline: none;
-      }
-    </style>
-    <body>
-     <div></div>
-    </body>
-  </html>`;
 }
 
 function dpToPixel(dp: number, dpi: number): number {
