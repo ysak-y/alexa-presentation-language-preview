@@ -95,7 +95,10 @@ export function activate(context: vscode.ExtensionContext) {
       statusBarItem.text = getDefaultViewport().name;
       statusBarItem.show();
 
-      webView.webview.html = buildHtml(aplPreviewJsUrl, viewhostWebJsUrl);
+      webView.webview.html = buildHtml(
+        aplPreviewJsUrl.toString(),
+        viewhostWebJsUrl.toString()
+      );
       webView.webview.onDidReceiveMessage(
         (message) => {
           switch (message.command) {
@@ -145,7 +148,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable);
 }
 
-function buildHtml(aplPreviewPath: any, aplWebviewHostPath: any) {
+function buildHtml(aplPreviewPath: string, aplWebviewHostPath: string) {
   return `
   <!DOCTYPE html>
   <html>
