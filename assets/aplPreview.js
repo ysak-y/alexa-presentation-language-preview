@@ -1,22 +1,11 @@
-async function loadAplDoc(
-  renderer,
-  apl,
-  datasources,
-  deviceConfig,
-  fatherDiv,
-  onSendEvent
-) {
-  if (renderer) {
-    renderer.destroy();
-    renderer = undefined;
-  }
+const vscode = acquireVsCodeApi();
+
+async function loadAplDoc(apl, datasources, deviceConfig, onSendEvent) {
   const content = createContent(apl, datasources);
 
-  const documentBody =
-    fatherDiv === "" ? document.body : document.getElementById(fatherDiv);
   const aplDiv = document.getElementById("aplView");
   if (aplDiv) {
-    documentBody.removeChild(aplDiv);
+    document.body.removeChild(aplDiv);
   }
   const div = document.createElement("div");
   div.setAttribute("id", "aplView");
@@ -25,7 +14,7 @@ async function loadAplDoc(
   div.style.height = deviceConfig.height.toString();
   div.style.width = deviceConfig.width.toString();
 
-  documentBody.appendChild(div);
+  document.body.appendChild(div);
   const options = {
     content,
     onSendEvent,
@@ -46,13 +35,10 @@ async function loadAplDoc(
     localTimeAdjustment: -new Date().getTimezoneOffset() * 60 * 1000,
   };
 
-  const renderer = AplRenderer.default.create(options);
-  window.renderer = renderer;
-  return renderer.init();
+  const newRenderer = AplRenderer.default.create(options);
+  window.renderer = newRenderer;
+  return newRenderer.init();
 }
-
-let renderer;
-const vscode = acquireVsCodeApi();
 
 window.onload = function () {
   AplRenderer.initEngine().catch((e) => {
@@ -64,13 +50,16 @@ window.onload = function () {
 };
 
 window.addEventListener("message", (event) => {
+  if (window.renderer) {
+    window.renderer.destroy();
+    window.renderer = undefined;
+  }
+
   const message = event.data;
   loadAplDoc(
-    renderer,
     message.document,
     message.datasources,
     JSON.parse(message.viewport),
-    "",
     () => {}
   ).catch((e) => {
     console.log(`Error while loading APL ${e}`);
