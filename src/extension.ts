@@ -1,13 +1,9 @@
 import { AplConfiguration } from "./models/AplConfiguration";
 import * as vscode from "vscode";
 import { Uri } from "vscode";
-import {
-  getDefaultViewport,
-  getViewportProfiles,
-  IViewport,
-  ViewportShape,
-} from "apl-suggester";
+import { getDefaultViewport, getViewportProfiles } from "apl-suggester";
 import { buildPreviewHtml } from "./utils/buildPreviewHtml";
+import { viewportCharacteristicsFromViewPort } from "./utils/viewportCharacteristicsFromViewPort";
 
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
@@ -161,22 +157,6 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(disposable);
-}
-
-function dpToPixel(dp: number, dpi: number): number {
-  return Math.round((dpi / 160) * dp);
-}
-
-// viewport in apl-viewhost-web must be IViewportCharacteristics type.
-// This method is to convert IViewportCharacteristics from IViewport
-// https://github.com/alexa/apl-viewhost-web/blob/master/js/apl-html/src/APLRenderer.ts#L60
-function viewportCharacteristicsFromViewPort(targetViewport: IViewport): any {
-  return {
-    isRound: targetViewport.shape === ViewportShape.ROUND,
-    height: dpToPixel(targetViewport.height, targetViewport.dpi),
-    width: dpToPixel(targetViewport.width, targetViewport.dpi),
-    dpi: targetViewport.dpi,
-  };
 }
 
 export function deactivate() {}
