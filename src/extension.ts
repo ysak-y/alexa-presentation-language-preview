@@ -1,39 +1,16 @@
 import { AplConfiguration } from "./models/AplConfiguration";
 import * as vscode from "vscode";
-import { Uri } from "vscode";
 import { getDefaultViewport, getViewportProfiles } from "apl-suggester";
-import { buildPreviewHtml } from "./utils/buildPreviewHtml";
 import { viewportCharacteristicsFromViewPort } from "./utils/viewportCharacteristicsFromViewPort";
+import { configureAplPreviewWebviewPanel } from "./utils/configureAplPreviewWebviewPanel";
 
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
     "alexa-presentation-language-preview.previewApl",
     () => {
-      const webView = vscode.window.createWebviewPanel(
-        "aplView",
-        "APL Preview",
-        {
-          viewColumn: vscode.ViewColumn.Beside,
-        },
-        {
-          enableScripts: true,
-        }
-      );
       const aplConfiguration = new AplConfiguration();
-
-      const aplPreviewJsLocation = Uri.joinPath(
-        context.extensionUri,
-        "assets/aplPreview.js"
-      );
-      const viewhostWebLocation = Uri.joinPath(
-        context.extensionUri,
-        "/node_modules/apl-viewhost-web/index.js"
-      );
-      const aplPreviewJsUrl =
-        webView.webview.asWebviewUri(aplPreviewJsLocation);
-      const viewhostWebJsUrl =
-        webView.webview.asWebviewUri(viewhostWebLocation);
       const textEditor = vscode.window.activeTextEditor;
+      const webViewPanel = configureAplPreviewWebviewPanel(context);
 
       vscode.commands.registerCommand(
         "alexa-presentation-language-preview.selectViewports",
@@ -72,7 +49,7 @@ export function activate(context: vscode.ExtensionContext) {
               );
               if (newViewport) {
                 aplConfiguration.viewport = newViewport;
-                webView.webview.postMessage({
+                webViewPanel.webview.postMessage({
                   document: JSON.stringify(
                     aplConfiguration.aplPayload.document
                   ),
@@ -96,11 +73,7 @@ export function activate(context: vscode.ExtensionContext) {
       statusBarItem.text = getDefaultViewport().name;
       statusBarItem.show();
 
-      webView.webview.html = buildPreviewHtml(
-        aplPreviewJsUrl.toString(),
-        viewhostWebJsUrl.toString()
-      );
-      webView.webview.onDidReceiveMessage(
+      webViewPanel.webview.onDidReceiveMessage(
         (message) => {
           switch (message.command) {
             case "initialize":
@@ -110,7 +83,7 @@ export function activate(context: vscode.ExtensionContext) {
                   currentDocument.getText()
                 );
 
-                webView.webview.postMessage({
+                webViewPanel.webview.postMessage({
                   document: JSON.stringify(
                     aplConfiguration.aplPayload.document
                   ),
@@ -139,7 +112,7 @@ export function activate(context: vscode.ExtensionContext) {
           if (document.uri === textEditor?.document.uri) {
             aplConfiguration.aplPayload = JSON.parse(document.getText());
 
-            webView.webview.postMessage({
+            webViewPanel.webview.postMessage({
               document: JSON.stringify(aplConfiguration.aplPayload.document),
               datasources: JSON.stringify(
                 aplConfiguration.aplPayload.datasources
