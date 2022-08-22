@@ -1,3 +1,4 @@
+import { AplConfiguration } from "./models/AplConfiguration";
 import * as vscode from "vscode";
 import { Uri } from "vscode";
 import {
@@ -22,8 +23,8 @@ export function activate(context: vscode.ExtensionContext) {
           enableScripts: true,
         }
       );
+      const aplConfiguration = new AplConfiguration();
 
-      let documentJson: any;
       const aplPreviewJsLocation = Uri.joinPath(
         context.extensionUri,
         "assets/aplPreview.js"
@@ -32,7 +33,6 @@ export function activate(context: vscode.ExtensionContext) {
         context.extensionUri,
         "/node_modules/apl-viewhost-web/index.js"
       );
-      let currentViewport = getDefaultViewport();
       const aplPreviewJsUrl =
         webView.webview.asWebviewUri(aplPreviewJsLocation);
       const viewhostWebJsUrl =
@@ -75,10 +75,14 @@ export function activate(context: vscode.ExtensionContext) {
                 (d) => d.name === selectedNewViewport?.label
               );
               if (newViewport) {
-                currentViewport = newViewport;
+                aplConfiguration.viewport = newViewport;
                 webView.webview.postMessage({
-                  document: JSON.stringify(documentJson["document"]),
-                  datasources: JSON.stringify(documentJson["datasources"]),
+                  document: JSON.stringify(
+                    aplConfiguration.aplPayload.document
+                  ),
+                  datasources: JSON.stringify(
+                    aplConfiguration.aplPayload.datasources
+                  ),
                   viewport: JSON.stringify(
                     viewportCharacteristicsFromViewPort(newViewport)
                   ),
@@ -106,13 +110,21 @@ export function activate(context: vscode.ExtensionContext) {
             case "initialize":
               const currentDocument = textEditor?.document;
               if (currentDocument) {
-                documentJson = JSON.parse(currentDocument.getText());
+                aplConfiguration.aplPayload = JSON.parse(
+                  currentDocument.getText()
+                );
 
                 webView.webview.postMessage({
-                  document: JSON.stringify(documentJson["document"]),
-                  datasources: JSON.stringify(documentJson["datasources"]),
+                  document: JSON.stringify(
+                    aplConfiguration.aplPayload.document
+                  ),
+                  datasources: JSON.stringify(
+                    aplConfiguration.aplPayload.datasources
+                  ),
                   viewport: JSON.stringify(
-                    viewportCharacteristicsFromViewPort(currentViewport)
+                    viewportCharacteristicsFromViewPort(
+                      aplConfiguration.viewport
+                    )
                   ),
                 });
               }
@@ -129,13 +141,15 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.workspace.onDidSaveTextDocument((document) => {
         try {
           if (document.uri === textEditor?.document.uri) {
-            documentJson = JSON.parse(document.getText());
+            aplConfiguration.aplPayload = JSON.parse(document.getText());
 
             webView.webview.postMessage({
-              document: JSON.stringify(documentJson["document"]),
-              datasources: JSON.stringify(documentJson["datasources"]),
+              document: JSON.stringify(aplConfiguration.aplPayload.document),
+              datasources: JSON.stringify(
+                aplConfiguration.aplPayload.datasources
+              ),
               viewport: JSON.stringify(
-                viewportCharacteristicsFromViewPort(currentViewport)
+                viewportCharacteristicsFromViewPort(aplConfiguration.viewport)
               ),
             });
           }
