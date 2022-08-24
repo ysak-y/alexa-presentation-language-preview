@@ -16,8 +16,19 @@ export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
     "alexa-presentation-language-preview.previewApl",
     () => {
-      const textEditor = vscode.window.activeTextEditor;
-      const aplPreviewWebviewPanel = new AplPreviewWebviewPanel(context);
+      const aplEditor = vscode.window.activeTextEditor;
+      if (!aplEditor) {
+        vscode.window.showInformationMessage(
+          "You need to focus the text window at first when execute this command"
+        );
+        disposable.dispose();
+        return;
+      }
+
+      const aplPreviewWebviewPanel = new AplPreviewWebviewPanel(
+        context,
+        aplEditor
+      );
       const statusBarItem = buildViewportStatusBarItem();
 
       const selectViewportDisposable = vscode.commands.registerCommand(
@@ -87,7 +98,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       vscode.workspace.onDidSaveTextDocument((document) => {
         try {
-          if (document.uri === textEditor?.document.uri) {
+          if (document.uri === aplEditor?.document.uri) {
             aplPreviewWebviewPanel.aplConfiguration.aplPayload = JSON.parse(
               document.getText()
             );

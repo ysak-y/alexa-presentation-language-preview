@@ -5,15 +5,20 @@ import { viewportCharacteristicsFromViewPort } from "../utils/viewportCharacteri
 
 export class AplPreviewWebviewPanel {
   aplConfiguration: AplConfiguration;
+  // 可能なら AplPreviewWebviewPanel と aplTextEditor の状態を管理するクラスを用意した方が良さそう
+  // AplPreviewWebviewPanel はパネル生成時にアクティブなテキストエディタのみに連動させたいが、可能なら直接依存する形でエディタの状態を監視させたい
+  aplTextEditor: vscode.TextEditor;
   webviewPanel: vscode.WebviewPanel;
 
   constructor(
     extensionContext: vscode.ExtensionContext,
+    aplTextEditor: vscode.TextEditor,
     aplConfiguration?: AplConfiguration
   ) {
     this.aplConfiguration = aplConfiguration
       ? aplConfiguration
       : new AplConfiguration();
+    this.aplTextEditor = aplTextEditor;
     this.webviewPanel = this.configureWebviewPanel(extensionContext);
     this.configureDidReceiveMessageCallback(extensionContext);
   }
@@ -67,7 +72,7 @@ export class AplPreviewWebviewPanel {
       (message) => {
         switch (message.command) {
           case "initialize":
-            const currentDocument = vscode.window.activeTextEditor?.document;
+            const currentDocument = this.aplTextEditor.document;
             if (currentDocument) {
               this.aplConfiguration.aplPayload = JSON.parse(
                 currentDocument.getText()
