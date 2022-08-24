@@ -87,6 +87,14 @@ export function activate(context: vscode.ExtensionContext) {
       );
       context.subscriptions.push(selectViewportDisposable);
 
+      vscode.workspace.onDidCloseTextDocument((document) => {
+        if (document.uri === aplEditor?.document.uri) {
+          aplPreviewWebviewPanel.webviewPanel.dispose();
+          statusBarItem.dispose();
+          selectViewportDisposable.dispose();
+        }
+      });
+
       aplPreviewWebviewPanel.webviewPanel.onDidDispose(
         () => {
           statusBarItem.dispose();
