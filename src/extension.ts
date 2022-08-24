@@ -1,16 +1,13 @@
-import { AplConfiguration } from "./models/AplConfiguration";
+import { AplPreviewWebviewPanel } from "./models/AplPreviewWebviewPanel";
 import * as vscode from "vscode";
 import { getDefaultViewport, getViewportProfiles } from "apl-suggester";
-import { viewportCharacteristicsFromViewPort } from "./utils/viewportCharacteristicsFromViewPort";
-import { configureAplPreviewWebviewPanel } from "./utils/configureAplPreviewWebviewPanel";
 
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
     "alexa-presentation-language-preview.previewApl",
     () => {
-      const aplConfiguration = new AplConfiguration();
       const textEditor = vscode.window.activeTextEditor;
-      const webViewPanel = configureAplPreviewWebviewPanel(context);
+      const aplPreviewWebviewPanel = new AplPreviewWebviewPanel(context);
 
       vscode.commands.registerCommand(
         "alexa-presentation-language-preview.selectViewport",
@@ -61,16 +58,8 @@ export function activate(context: vscode.ExtensionContext) {
           }
 
           // Update Webview with new viewport
-          aplConfiguration.viewport = newViewport;
-          webViewPanel.webview.postMessage({
-            document: JSON.stringify(aplConfiguration.aplPayload.document),
-            datasources: JSON.stringify(
-              aplConfiguration.aplPayload.datasources
-            ),
-            viewport: JSON.stringify(
-              viewportCharacteristicsFromViewPort(newViewport)
-            ),
-          });
+          aplPreviewWebviewPanel.aplConfiguration.viewport = newViewport;
+          aplPreviewWebviewPanel.updateAplPreview();
           statusBarItem.text = selectedViewportProfileName.label;
         }
       );
@@ -81,54 +70,13 @@ export function activate(context: vscode.ExtensionContext) {
       statusBarItem.text = getDefaultViewport().name;
       statusBarItem.show();
 
-      webViewPanel.webview.onDidReceiveMessage(
-        (message) => {
-          switch (message.command) {
-            case "initialize":
-              const currentDocument = textEditor?.document;
-              if (currentDocument) {
-                aplConfiguration.aplPayload = JSON.parse(
-                  currentDocument.getText()
-                );
-
-                webViewPanel.webview.postMessage({
-                  document: JSON.stringify(
-                    aplConfiguration.aplPayload.document
-                  ),
-                  datasources: JSON.stringify(
-                    aplConfiguration.aplPayload.datasources
-                  ),
-                  viewport: JSON.stringify(
-                    viewportCharacteristicsFromViewPort(
-                      aplConfiguration.viewport
-                    )
-                  ),
-                });
-              }
-              return;
-            case "alert":
-              vscode.window.showErrorMessage(message.text);
-              return;
-          }
-        },
-        undefined,
-        context.subscriptions
-      );
-
       vscode.workspace.onDidSaveTextDocument((document) => {
         try {
           if (document.uri === textEditor?.document.uri) {
-            aplConfiguration.aplPayload = JSON.parse(document.getText());
-
-            webViewPanel.webview.postMessage({
-              document: JSON.stringify(aplConfiguration.aplPayload.document),
-              datasources: JSON.stringify(
-                aplConfiguration.aplPayload.datasources
-              ),
-              viewport: JSON.stringify(
-                viewportCharacteristicsFromViewPort(aplConfiguration.viewport)
-              ),
-            });
+            aplPreviewWebviewPanel.aplConfiguration.aplPayload = JSON.parse(
+              document.getText()
+            );
+            aplPreviewWebviewPanel.updateAplPreview();
           }
         } catch (e) {
           vscode.window.showInformationMessage("Your json seems to be invalid");
