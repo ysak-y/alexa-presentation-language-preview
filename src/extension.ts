@@ -13,8 +13,9 @@ export function activate(context: vscode.ExtensionContext) {
       const webViewPanel = configureAplPreviewWebviewPanel(context);
 
       vscode.commands.registerCommand(
-        "alexa-presentation-language-preview.selectViewports",
+        "alexa-presentation-language-preview.selectViewport",
         async () => {
+          // Ask ViewportProfile name to set
           const viewportProfiles = getViewportProfiles()
             .map((v) => {
               return {
@@ -25,50 +26,57 @@ export function activate(context: vscode.ExtensionContext) {
             .valueSeq()
             .toArray();
 
-          const selectedViewportName = await vscode.window.showQuickPick(
+          const selectedViewportProfileName = await vscode.window.showQuickPick(
             viewportProfiles
           );
 
-          if (selectedViewportName) {
-            const newViewportProfile = getViewportProfiles().find(
-              (v) => v.name === selectedViewportName.label
-            );
-
-            const viewports = newViewportProfile?.exampleDevices.map((d) => {
-              return {
-                label: d.name,
-              } as vscode.QuickPickItem;
-            });
-
-            if (viewports) {
-              const selectedNewViewport = await vscode.window.showQuickPick(
-                viewports
-              );
-              const newViewport = newViewportProfile?.exampleDevices.find(
-                (d) => d.name === selectedNewViewport?.label
-              );
-              if (newViewport) {
-                aplConfiguration.viewport = newViewport;
-                webViewPanel.webview.postMessage({
-                  document: JSON.stringify(
-                    aplConfiguration.aplPayload.document
-                  ),
-                  datasources: JSON.stringify(
-                    aplConfiguration.aplPayload.datasources
-                  ),
-                  viewport: JSON.stringify(
-                    viewportCharacteristicsFromViewPort(newViewport)
-                  ),
-                });
-                statusBarItem.text = selectedViewportName.label;
-              }
-            }
+          if (!selectedViewportProfileName) {
+            return;
           }
+
+          const selectedViewportProfile = getViewportProfiles().find(
+            (v) => v.name === selectedViewportProfileName.label
+          );
+
+          // Ask Viewport name to set
+          const viewports = selectedViewportProfile?.exampleDevices.map((d) => {
+            return {
+              label: d.name,
+            } as vscode.QuickPickItem;
+          });
+
+          if (!viewports) {
+            return;
+          }
+
+          const selectedViewportName = await vscode.window.showQuickPick(
+            viewports
+          );
+          const newViewport = selectedViewportProfile?.exampleDevices.find(
+            (d) => d.name === selectedViewportName?.label
+          );
+
+          if (!newViewport) {
+            return;
+          }
+
+          // Update Webview with new viewport
+          aplConfiguration.viewport = newViewport;
+          webViewPanel.webview.postMessage({
+            document: JSON.stringify(aplConfiguration.aplPayload.document),
+            datasources: JSON.stringify(
+              aplConfiguration.aplPayload.datasources
+            ),
+            viewport: JSON.stringify(
+              viewportCharacteristicsFromViewPort(newViewport)
+            ),
+          });
+          statusBarItem.text = selectedViewportProfileName.label;
         }
       );
       const statusBarItem = vscode.window.createStatusBarItem();
       statusBarItem.command =
-        "alexa-presentation-language-preview.selectViewports";
+        "alexa-presentation-language-preview.selectViewport";
       statusBarItem.name = "Select Viewport Profile";
       statusBarItem.text = getDefaultViewport().name;
       statusBarItem.show();
