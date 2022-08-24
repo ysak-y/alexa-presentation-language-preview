@@ -2,12 +2,23 @@ import { AplPreviewWebviewPanel } from "./models/AplPreviewWebviewPanel";
 import * as vscode from "vscode";
 import { getDefaultViewport, getViewportProfiles } from "apl-suggester";
 
+function buildViewportStatusBarItem(): vscode.StatusBarItem {
+  const statusBarItem = vscode.window.createStatusBarItem();
+  statusBarItem.command = "alexa-presentation-language-preview.selectViewport";
+  statusBarItem.name = "Select Viewport Profile";
+  statusBarItem.text = getDefaultViewport().name;
+  statusBarItem.show();
+
+  return statusBarItem;
+}
+
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
     "alexa-presentation-language-preview.previewApl",
     () => {
       const textEditor = vscode.window.activeTextEditor;
       const aplPreviewWebviewPanel = new AplPreviewWebviewPanel(context);
+      const statusBarItem = buildViewportStatusBarItem();
 
       const selectViewportDisposable = vscode.commands.registerCommand(
         "alexa-presentation-language-preview.selectViewport",
@@ -64,13 +75,6 @@ export function activate(context: vscode.ExtensionContext) {
         }
       );
       context.subscriptions.push(selectViewportDisposable);
-
-      const statusBarItem = vscode.window.createStatusBarItem();
-      statusBarItem.command =
-        "alexa-presentation-language-preview.selectViewport";
-      statusBarItem.name = "Select Viewport Profile";
-      statusBarItem.text = getDefaultViewport().name;
-      statusBarItem.show();
 
       aplPreviewWebviewPanel.webviewPanel.onDidDispose(
         () => {
