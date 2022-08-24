@@ -9,7 +9,7 @@ export function activate(context: vscode.ExtensionContext) {
       const textEditor = vscode.window.activeTextEditor;
       const aplPreviewWebviewPanel = new AplPreviewWebviewPanel(context);
 
-      vscode.commands.registerCommand(
+      const selectViewportDisposable = vscode.commands.registerCommand(
         "alexa-presentation-language-preview.selectViewport",
         async () => {
           // Ask ViewportProfile name to set
@@ -63,12 +63,23 @@ export function activate(context: vscode.ExtensionContext) {
           statusBarItem.text = selectedViewportProfileName.label;
         }
       );
+      context.subscriptions.push(selectViewportDisposable);
+
       const statusBarItem = vscode.window.createStatusBarItem();
       statusBarItem.command =
         "alexa-presentation-language-preview.selectViewport";
       statusBarItem.name = "Select Viewport Profile";
       statusBarItem.text = getDefaultViewport().name;
       statusBarItem.show();
+
+      aplPreviewWebviewPanel.webviewPanel.onDidDispose(
+        () => {
+          statusBarItem.dispose();
+          selectViewportDisposable.dispose();
+        },
+        null,
+        context.subscriptions
+      );
 
       vscode.workspace.onDidSaveTextDocument((document) => {
         try {
