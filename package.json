@@ -22,6 +22,7 @@
       }
     ]
   },
+  "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "vscode:prepublish": "yarn run compile",
     "compile": "tsc -p ./",
