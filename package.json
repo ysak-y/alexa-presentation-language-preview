@@ -1,13 +1,14 @@
 {
   "name": "alexa-presentation-language-preview",
   "displayName": "Alexa Presentation Language Preview",
-  "description": "",
+  "description": "Unofficial preview tool for Amazon Presentation Language",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.68.0"
   },
   "categories": [
-    "Other"
+    "Visualization",
+    "Testing"
   ],
   "activationEvents": [
     "onCommand:alexa-presentation-language-preview.previewApl"
