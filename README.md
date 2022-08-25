@@ -16,4 +16,4 @@ You can change viewport size by selecting viewport on the status bar.
 
 ## Demo
 
-![](usage.gif)
+<img src="usage.gif" width="100%">
