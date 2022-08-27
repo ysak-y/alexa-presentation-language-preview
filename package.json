@@ -1,7 +1,7 @@
 {
   "name": "alexa-presentation-language-preview",
   "displayName": "Alexa Presentation Language Preview",
-  "description": "Unofficial preview tool for Amazon Presentation Language",
+  "description": "Unofficial preview tool for Alexa Presentation Language",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.70.0"
@@ -19,7 +19,7 @@
     "commands": [
       {
         "command": "alexa-presentation-language-preview.previewApl",
-        "title": "Preview Amazon Presentation Language"
+        "title": "Preview Alexa Presentation Language"
       }
     ]
   },
