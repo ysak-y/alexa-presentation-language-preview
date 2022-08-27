@@ -6,6 +6,7 @@
   "engines": {
     "vscode": "^1.68.0"
   },
+  "publisher": "Yoshiaki Yamada",
   "categories": [
     "Visualization",
     "Testing"
