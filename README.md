@@ -17,3 +17,10 @@ You can change viewport size by selecting viewport on the status bar.
 ## Demo
 
 <img src="usage.gif" width="100%">
+
+## Future works
+
+- Introduce APL Suggester
+- Local package import
+- Reload button
+- GUI editor
