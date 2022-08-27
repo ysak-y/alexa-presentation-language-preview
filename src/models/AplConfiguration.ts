@@ -5,12 +5,11 @@ type JsonValue =
   | number
   | boolean
   | JsonValue[]
-  | { [key: string]: JsonValue }
-  | null;
+  | { [key: string]: JsonValue };
 
 interface AplPayload {
-  document: JsonValue;
-  datasources: JsonValue;
+  document: { [key: string]: JsonValue };
+  datasources: { [key: string]: JsonValue };
 }
 
 export class AplConfiguration {
