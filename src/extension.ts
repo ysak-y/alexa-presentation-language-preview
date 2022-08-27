@@ -16,7 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
     "alexa-presentation-language-preview.previewApl",
     () => {
-      const aplEditor = vscode.window.activeTextEditor;
+      let aplEditor = vscode.window.activeTextEditor;
       if (!aplEditor) {
         vscode.window.showInformationMessage(
           "You need to focus the text window at first when execute this command"
@@ -25,10 +25,8 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      const aplPreviewWebviewPanel = new AplPreviewWebviewPanel(
-        context,
-        aplEditor
-      );
+      let aplPreviewWebviewPanel: AplPreviewWebviewPanel | undefined =
+        new AplPreviewWebviewPanel(context, aplEditor);
       const statusBarItem = buildViewportStatusBarItem();
 
       const selectViewportDisposable = vscode.commands.registerCommand(
@@ -80,23 +78,28 @@ export function activate(context: vscode.ExtensionContext) {
           }
 
           // Update Webview with new viewport
-          aplPreviewWebviewPanel.aplConfiguration.viewport = newViewport;
-          aplPreviewWebviewPanel.updateAplPreview();
-          statusBarItem.text = selectedViewportProfileName.label;
+          if (aplPreviewWebviewPanel) {
+            aplPreviewWebviewPanel.aplConfiguration.viewport = newViewport;
+            aplPreviewWebviewPanel.updateAplPreview();
+            statusBarItem.text = selectedViewportProfileName.label;
+          }
         }
       );
       context.subscriptions.push(selectViewportDisposable);
 
       vscode.workspace.onDidCloseTextDocument((document) => {
         if (document.uri === aplEditor?.document.uri) {
-          aplPreviewWebviewPanel.webviewPanel.dispose();
+          aplPreviewWebviewPanel?.webviewPanel.dispose();
+          aplPreviewWebviewPanel = undefined;
           statusBarItem.dispose();
           selectViewportDisposable.dispose();
+          aplEditor = undefined;
         }
       });
 
       aplPreviewWebviewPanel.webviewPanel.onDidDispose(
         () => {
+          aplPreviewWebviewPanel = undefined;
           statusBarItem.dispose();
           selectViewportDisposable.dispose();
         },
@@ -106,7 +109,10 @@ export function activate(context: vscode.ExtensionContext) {
 
       vscode.workspace.onDidSaveTextDocument((document) => {
         try {
-          if (document.uri === aplEditor?.document.uri) {
+          if (
+            document.uri === aplEditor?.document.uri &&
+            aplPreviewWebviewPanel
+          ) {
             aplPreviewWebviewPanel.aplConfiguration.aplPayload = JSON.parse(
               document.getText()
             );
