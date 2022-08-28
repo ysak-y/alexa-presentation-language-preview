@@ -113,8 +113,8 @@ export function activate(context: vscode.ExtensionContext) {
             document.uri === aplEditor?.document.uri &&
             aplPreviewWebviewPanel
           ) {
-            aplPreviewWebviewPanel.aplConfiguration.aplPayload = JSON.parse(
-              document.getText()
+            aplPreviewWebviewPanel.updateAplPayload(
+              JSON.parse(document.getText())
             );
             aplPreviewWebviewPanel.updateAplPreview();
           }
