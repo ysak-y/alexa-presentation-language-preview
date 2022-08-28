@@ -4,6 +4,11 @@ All notable changes to the "alexa-presentation-language-preview" extension will 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 0.1.0
+
+- Introduce local package import feature
+  - https://github.com/ysak-y/alexa-presentation-language-preview#local-package-import
+
 ## 0.0.3
 
 - Add icon
