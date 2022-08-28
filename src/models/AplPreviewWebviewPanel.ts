@@ -1,7 +1,9 @@
-import { AplConfiguration } from "./AplConfiguration";
+import { LocalPackageImportError } from "./../utils/exceptions";
+import { AplConfiguration, AplPayload } from "./AplConfiguration";
 import * as vscode from "vscode";
 import { buildPreviewHtml } from "../utils/buildPreviewHtml";
 import { viewportCharacteristicsFromViewPort } from "../utils/viewportCharacteristicsFromViewPort";
+import * as path from "node:path";
 
 export class AplPreviewWebviewPanel {
   aplConfiguration: AplConfiguration;
@@ -21,6 +23,24 @@ export class AplPreviewWebviewPanel {
     this.aplTextEditor = aplTextEditor;
     this.webviewPanel = this.configureWebviewPanel(extensionContext);
     this.configureDidReceiveMessageCallback(extensionContext);
+  }
+
+  updateAplPayload(aplPayload: AplPayload) {
+    const documentDirPath = path.dirname(this.aplTextEditor.document.uri.path);
+    try {
+      this.aplConfiguration.setAndInflateAplPayload(
+        documentDirPath,
+        aplPayload
+      );
+    } catch (e) {
+      if (e instanceof LocalPackageImportError) {
+        vscode.window.showInformationMessage(
+          "Failed import local packages while updating APL json. It may because source path is invalid"
+        );
+      } else {
+        vscode.window.showInformationMessage("Your APL json seems invalid.");
+      }
+    }
   }
 
   updateAplPreview() {
@@ -74,9 +94,7 @@ export class AplPreviewWebviewPanel {
           case "initialize":
             const currentDocument = this.aplTextEditor.document;
             if (currentDocument) {
-              this.aplConfiguration.aplPayload = JSON.parse(
-                currentDocument.getText()
-              );
+              this.updateAplPayload(JSON.parse(currentDocument.getText()));
               this.updateAplPreview();
             }
             return;
