@@ -15,6 +15,37 @@ Open APL document json file on the VSCode, then call `Preview Amazon Presentatio
 
 You can change viewport size by selecting viewport on the status bar.
 
+### Local package import
+
+This extension supports to import APL package from local directory.
+
+If you don't know about APL package, please read this document at first.
+https://developer.amazon.com/en-US/docs/alexa/alexa-presentation-language/apl-package.html
+
+You can import APL package from local directory by setting path to `source` property.
+For example, extension will import `your-own-package` from `./your-own-package.json`. You can set full path for source also.
+
+```json
+{
+  "import": [
+    {
+      "name": "your-own-package",
+      "source": "./your-own-package.json",
+      "version": "1.0"
+    },
+    {
+      "name": "alexa-layouts",
+      "version": "1.5.0"
+    }
+  ]
+}
+```
+
+This is the detail document of `import` section.
+https://developer.amazon.com/en-US/docs/alexa/alexa-presentation-language/apl-document.html#import
+
+Extension just read file contents and integrate to original APL json file. So it may not same as actual `import` mechanism of APL. Please remain it if something happens.
+
 ## Demo
 
 <img src="usage.gif" width="100%">
@@ -22,7 +53,6 @@ You can change viewport size by selecting viewport on the status bar.
 ## Future works
 
 - Introduce APL Suggester
-- Local package import
 - Reload button
 - GUI editor
 - Introduce Vitest
