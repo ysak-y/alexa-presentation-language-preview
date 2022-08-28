@@ -23,7 +23,7 @@
       }
     ]
   },
-  "icon": "./icon.png",
+  "icon": "icon.png",
   "license": "SEE LICENSE IN LICENSE",
   "scripts": {
     "vscode:prepublish": "yarn run compile",
