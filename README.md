@@ -1,6 +1,7 @@
 # alexa-presentation-language-preview
 
 VSCode extension for previewing APL document
+https://marketplace.visualstudio.com/items?itemName=YoshiakiYamada.alexa-presentation-language-preview
 
 ## What is it
 
