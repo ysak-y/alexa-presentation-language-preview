@@ -3,17 +3,11 @@ import { IViewport, getDefaultViewport } from "apl-suggester";
 import * as fs from "node:fs";
 import merge from "merge";
 import * as path from "node:path";
-
-type JsonValue =
-  | string
-  | number
-  | boolean
-  | JsonValue[]
-  | { [key: string]: JsonValue };
+import { JsonType } from "../utils/JsonUtils";
 
 export interface AplPayload {
-  document: { [key: string]: JsonValue };
-  datasources: { [key: string]: JsonValue };
+  document: JsonType;
+  datasources: JsonType;
 }
 
 interface AplPackageImport {
