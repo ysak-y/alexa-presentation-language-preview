@@ -4,6 +4,10 @@ All notable changes to the "alexa-presentation-language-preview" extension will 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 0.0.3
+
+- Add icon
+
 ## 0.0.2
 
 - Just correct typo in metadata
