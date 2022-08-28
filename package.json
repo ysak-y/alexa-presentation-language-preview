@@ -7,6 +7,14 @@
     "vscode": "^1.70.0"
   },
   "publisher": "YoshiakiYamada",
+  "keywords": [
+    "Alexa",
+    "JSON",
+    "APL",
+    "Local Debug",
+    "Alexa skills",
+    "Alexa Presentation Language"
+  ],
   "categories": [
     "Visualization",
     "Testing"
