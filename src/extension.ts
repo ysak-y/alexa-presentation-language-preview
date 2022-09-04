@@ -1,7 +1,6 @@
 import { AplPreviewWebviewPanel } from "./models/AplPreviewWebviewPanel";
 import * as vscode from "vscode";
 import { getDefaultViewport, getViewportProfiles } from "apl-suggester";
-import { AplDocumentTreeView } from "./views/AplDocumentTreeView";
 
 function buildViewportStatusBarItem(): vscode.StatusBarItem {
   const statusBarItem = vscode.window.createStatusBarItem();
