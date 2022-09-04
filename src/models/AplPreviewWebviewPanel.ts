@@ -98,6 +98,7 @@ export class AplPreviewWebviewPanel {
               this.updateAplPayload(JSON.parse(currentDocument.getText()));
               this.updateAplPreview();
 
+              // TODO Move AplDocumentTreeView configurations to other places
               const aplDocumentTreeView = new AplDocumentTreeView(
                 this.aplConfiguration
               );
