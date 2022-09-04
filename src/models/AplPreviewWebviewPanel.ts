@@ -5,6 +5,7 @@ import * as vscode from "vscode";
 import { buildPreviewHtml } from "../utils/buildPreviewHtml";
 import { viewportCharacteristicsFromViewPort } from "../utils/viewportCharacteristicsFromViewPort";
 import * as path from "node:path";
+import { AplComponentDetailsTreeView } from "../views/AplComponentDetailsTreeView";
 
 export class AplPreviewWebviewPanel {
   aplConfiguration: AplConfiguration;
@@ -119,6 +120,31 @@ export class AplPreviewWebviewPanel {
                 );
               extensionContext.subscriptions.push(
                 refreshAplDocumentTreeViewDisposable
+              );
+
+              // TODO Move AplComponentDetailsTreeView configurations to other places
+              // TODO Update content when save json
+              const aplComponentDetailsTreeView =
+                new AplComponentDetailsTreeView(this.aplConfiguration, {});
+              vscode.window.registerTreeDataProvider(
+                "aplComponentDetailsTree",
+                aplComponentDetailsTreeView
+              );
+              vscode.window.createTreeView("aplComponentDetailsTree", {
+                treeDataProvider: aplComponentDetailsTreeView,
+              });
+
+              const refreshAplComponentDetailsTreeViewDisposable =
+                vscode.commands.registerCommand(
+                  "alexa-presentation-language-preview.updateAplComponentDetailsTree",
+                  async (aplComponentProperty) => {
+                    aplComponentDetailsTreeView.updateAplProperty(
+                      aplComponentProperty
+                    );
+                  }
+                );
+              extensionContext.subscriptions.push(
+                refreshAplComponentDetailsTreeViewDisposable
               );
             }
             return;

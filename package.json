@@ -35,6 +35,10 @@
         {
           "id": "aplDocumentTree",
           "name": "APL Document tree"
+        },
+        {
+          "id": "aplComponentDetailsTree",
+          "name": "APL Component details"
         }
       ]
     }

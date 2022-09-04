@@ -86,5 +86,12 @@ class AplComponent extends vscode.TreeItem {
     public readonly collapsibleState: vscode.TreeItemCollapsibleState
   ) {
     super(label, collapsibleState);
+    this.command = {
+      arguments: [properties],
+      command:
+        "alexa-presentation-language-preview.updateAplComponentDetailsTree",
+      title: "APL Component details",
+      tooltip: "Show component detail in APL Component details view",
+    };
   }
 }
