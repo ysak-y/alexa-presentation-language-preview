@@ -3,7 +3,7 @@ import { IViewport, getDefaultViewport } from "apl-suggester";
 import * as fs from "node:fs";
 import merge from "merge";
 import * as path from "node:path";
-import { JsonType } from "../utils/JsonUtils";
+import { JsonType, JsonValue } from "../utils/JsonUtils";
 
 export interface AplPayload {
   document: JsonType;
