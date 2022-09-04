@@ -1,6 +1,7 @@
 import { AplPreviewWebviewPanel } from "./models/AplPreviewWebviewPanel";
 import * as vscode from "vscode";
 import { getDefaultViewport, getViewportProfiles } from "apl-suggester";
+import { AplDocumentTreeView } from "./views/AplDocumentTreeView";
 
 function buildViewportStatusBarItem(): vscode.StatusBarItem {
   const statusBarItem = vscode.window.createStatusBarItem();
@@ -117,6 +118,9 @@ export function activate(context: vscode.ExtensionContext) {
               JSON.parse(document.getText())
             );
             aplPreviewWebviewPanel.updateAplPreview();
+            vscode.commands.executeCommand(
+              "alexa-presentation-language-preview.refreshAplDocumentTreeView"
+            );
           }
         } catch (e) {
           vscode.window.showInformationMessage("Your json seems to be invalid");

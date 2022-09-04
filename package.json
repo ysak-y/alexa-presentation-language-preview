@@ -29,7 +29,15 @@
         "command": "alexa-presentation-language-preview.previewApl",
         "title": "Preview Alexa Presentation Language"
       }
-    ]
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "aplDocumentTree",
+          "name": "APL Document tree"
+        }
+      ]
+    }
   },
   "icon": "icon.png",
   "license": "SEE LICENSE IN LICENSE",

@@ -1,3 +1,4 @@
+import { AplDocumentTreeView } from "./../views/AplDocumentTreeView";
 import { LocalPackageImportError } from "./../utils/exceptions";
 import { AplConfiguration, AplPayload } from "./AplConfiguration";
 import * as vscode from "vscode";
@@ -96,6 +97,28 @@ export class AplPreviewWebviewPanel {
             if (currentDocument) {
               this.updateAplPayload(JSON.parse(currentDocument.getText()));
               this.updateAplPreview();
+
+              const aplDocumentTreeView = new AplDocumentTreeView(
+                this.aplConfiguration
+              );
+              vscode.window.registerTreeDataProvider(
+                "aplDocumentTree",
+                aplDocumentTreeView
+              );
+              vscode.window.createTreeView("aplDocumentTree", {
+                treeDataProvider: aplDocumentTreeView,
+              });
+
+              const refreshAplDocumentTreeViewDisposable =
+                vscode.commands.registerCommand(
+                  "alexa-presentation-language-preview.refreshAplDocumentTreeView",
+                  async () => {
+                    aplDocumentTreeView.refresh();
+                  }
+                );
+              extensionContext.subscriptions.push(
+                refreshAplDocumentTreeViewDisposable
+              );
             }
             return;
           case "alert":
