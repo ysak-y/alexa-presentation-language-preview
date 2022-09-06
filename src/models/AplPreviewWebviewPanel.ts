@@ -6,6 +6,9 @@ import { buildPreviewHtml } from "../utils/buildPreviewHtml";
 import { viewportCharacteristicsFromViewPort } from "../utils/viewportCharacteristicsFromViewPort";
 import * as path from "node:path";
 import { AplComponentDetailsTreeView } from "../views/AplComponentDetailsTreeView";
+import * as jsonlint from "jsonlint-pos";
+jsonlint.parser.setPosEnabled(true);
+import * as fs from "fs";
 
 export class AplPreviewWebviewPanel {
   aplConfiguration: AplConfiguration;
@@ -137,10 +140,69 @@ export class AplPreviewWebviewPanel {
               const refreshAplComponentDetailsTreeViewDisposable =
                 vscode.commands.registerCommand(
                   "alexa-presentation-language-preview.updateAplComponentDetailsTree",
-                  async (aplComponentProperty) => {
+                  async (
+                    aplComponentProperty,
+                    aplComponentJsonPath: string
+                  ) => {
                     aplComponentDetailsTreeView.updateAplProperty(
                       aplComponentProperty
                     );
+
+                    const aplDocumentJson = fs.readFileSync(
+                      this.aplTextEditor.document.uri.path,
+                      "utf8"
+                    );
+
+                    if (!aplDocumentJson) {
+                      return;
+                    }
+
+                    // Use text from file instead of using apl document in AplConfiguration
+                    // because JSON.stringify() would produce some differences from original texts
+                    const parsedJson =
+                      jsonlint.parser.parse(aplDocumentJson)["document"];
+
+                    let jsonValue = parsedJson;
+                    const pathArray = aplComponentJsonPath.split("/");
+                    pathArray.forEach((a, idx) => {
+                      if (idx !== pathArray.length - 1) {
+                        jsonValue = jsonValue[a];
+                      }
+                    });
+                    if (jsonValue) {
+                      const position: jsonlint.Position =
+                        jsonValue["_pos"][
+                          `_${pathArray[pathArray.length - 1]}`
+                        ];
+
+                      const startPos = new vscode.Position(
+                        position.first_line - 1,
+                        0
+                      );
+                      const endPos = new vscode.Position(position.last_line, 0);
+                      const targetComponentRange = new vscode.Range(
+                        startPos,
+                        endPos
+                      );
+                      this.aplTextEditor.revealRange(targetComponentRange);
+
+                      // Blink background with highlight color to notify
+                      // the place of the selected component
+                      const decorationType =
+                        vscode.window.createTextEditorDecorationType({
+                          backgroundColor: new vscode.ThemeColor(
+                            "editor.selectionHighlightBackground"
+                          ),
+                        });
+
+                      this.aplTextEditor.setDecorations(decorationType, [
+                        targetComponentRange,
+                      ]);
+
+                      setTimeout(() => {
+                        this.aplTextEditor.setDecorations(decorationType, []);
+                      }, 1000);
+                    }
                   }
                 );
               extensionContext.subscriptions.push(
