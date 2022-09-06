@@ -73,6 +73,7 @@
   "dependencies": {
     "apl-suggester": "^2022.1.0",
     "apl-viewhost-web": "^2022.1.0",
+    "jsonlint-pos": "^2.1.2",
     "merge": "^2.1.1"
   }
 }
