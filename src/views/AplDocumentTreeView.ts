@@ -13,16 +13,32 @@ export class AplDocumentTreeView
 
   getChildren(element?: AplComponent): Thenable<AplComponent[]> {
     if (element) {
-      const childComponents: AplComponent[] = this.getItemsFromComponents(
+      const componentAndPropertyName = this.getItemsFromComponents(
         element.properties
-      ).map((c: JsonType) => {
-        const label = (c["id"] ? c["id"] : c["type"]) as string;
-        const collapsibleState =
-          Object.keys(c).length === 0
-            ? vscode.TreeItemCollapsibleState.None
-            : vscode.TreeItemCollapsibleState.Expanded;
-        return new AplComponent(label, c, collapsibleState);
-      });
+      );
+
+      if (!componentAndPropertyName) {
+        return Promise.resolve([]);
+      }
+
+      const isItemArray = Array.isArray(componentAndPropertyName.items);
+      const items = this.wrapWithArrayIfObject(componentAndPropertyName.items);
+
+      const childComponents: AplComponent[] = items
+        ? items.map((c: JsonType, idx: number) => {
+            const label = (c["id"] ? c["id"] : c["type"]) as string;
+            const collapsibleState =
+              Object.keys(c).length === 0
+                ? vscode.TreeItemCollapsibleState.None
+                : vscode.TreeItemCollapsibleState.Expanded;
+
+            let path = `${element.path}/${componentAndPropertyName.propertyName}`;
+            if (isItemArray) {
+              path += `/${idx}`;
+            }
+            return new AplComponent(label, c, collapsibleState, path);
+          })
+        : [];
       return Promise.resolve(childComponents);
     } else {
       const mainTemplate = this.aplConfiguration.aplPayload.document[
@@ -34,7 +50,12 @@ export class AplDocumentTreeView
             ? vscode.TreeItemCollapsibleState.None
             : vscode.TreeItemCollapsibleState.Expanded;
         return Promise.resolve([
-          new AplComponent("mainTemplate", mainTemplate, collapsibleState),
+          new AplComponent(
+            "mainTemplate",
+            mainTemplate,
+            collapsibleState,
+            "mainTemplate"
+          ),
         ]);
       } else {
         return Promise.resolve([]);
@@ -53,19 +74,27 @@ export class AplDocumentTreeView
     this._onDidChangeTreeData.fire();
   }
 
-  private getItemsFromComponents(aplComponent: JsonType) {
-    let items: JsonType[] = [];
-    const itemsValue = this.wrapWithArrayIfObject(aplComponent["items"]);
+  private getItemsFromComponents(aplComponent: JsonType):
+    | {
+        propertyName: string;
+        items: JsonType[] | JsonType;
+      }
+    | undefined {
+    const itemsValue = aplComponent["items"];
     if (itemsValue) {
-      items = items.concat(itemsValue);
+      return {
+        items: itemsValue as JsonType,
+        propertyName: "items",
+      };
     }
 
-    const itemValue = this.wrapWithArrayIfObject(aplComponent["item"]);
+    const itemValue = aplComponent["item"];
     if (itemValue) {
-      items = items.concat(itemValue);
+      return {
+        items: itemValue as JsonType,
+        propertyName: "item",
+      };
     }
-
-    return items;
   }
 
   private wrapWithArrayIfObject(
@@ -83,11 +112,12 @@ class AplComponent extends vscode.TreeItem {
   constructor(
     public readonly label: string,
     public properties: JsonType,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState
+    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+    public readonly path: string
   ) {
     super(label, collapsibleState);
     this.command = {
-      arguments: [properties],
+      arguments: [properties, path],
       command:
         "alexa-presentation-language-preview.updateAplComponentDetailsTree",
       title: "APL Component details",
