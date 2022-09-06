@@ -15,6 +15,11 @@ Open APL document json file on the VSCode, then call `Preview Amazon Presentatio
 
 You can change viewport size by selecting viewport on the status bar.
 
+### APL Document component tree
+
+You can see `APL DOCUMENT TREE` and `APL COMPONENT DETAILS` tree view in `EXPLORER` tab.
+`APL DOCUMENT TREE` shows component structure of the document. And `APL COMPONENT DETAILS` shows properties of the component you selected on the `APL DOCUMENT TREE`
+
 ### Local package import
 
 This extension supports to import APL package from local directory.
