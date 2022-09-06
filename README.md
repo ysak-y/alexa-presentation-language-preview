@@ -20,6 +20,8 @@ You can change viewport size by selecting viewport on the status bar.
 You can see `APL DOCUMENT TREE` and `APL COMPONENT DETAILS` tree view in `EXPLORER` tab.
 `APL DOCUMENT TREE` shows component structure of the document. And `APL COMPONENT DETAILS` shows properties of the component you selected on the `APL DOCUMENT TREE`
 
+https://user-images.githubusercontent.com/5585662/188664431-2fd20a90-ca6a-43d9-8565-434e7da7ea24.mp4
+
 ### Local package import
 
 This extension supports to import APL package from local directory.
