@@ -2,7 +2,7 @@
   "name": "alexa-presentation-language-preview",
   "displayName": "Alexa Presentation Language Preview",
   "description": "Unofficial preview tool for Alexa Presentation Language",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "engines": {
     "vscode": "^1.70.0"
   },

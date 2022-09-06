@@ -4,6 +4,11 @@ All notable changes to the "alexa-presentation-language-preview" extension will 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 0.2.0
+
+- Introduce APL Document component tree and its detail tree
+- Blink background of the component that is selected by user in the component tree
+
 ## 0.1.0
 
 - Introduce local package import feature
