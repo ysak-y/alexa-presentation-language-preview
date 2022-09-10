@@ -15,6 +15,10 @@ Open APL document json file on the VSCode, then call `Preview Amazon Presentatio
 
 You can change viewport size by selecting viewport on the status bar.
 
+### Refresh preview
+
+APL Preview will refresh each time when you save json file. So if you want to debug `onMount` or other commands which are called when show the document, just save json file again.
+
 ### APL Document component tree
 
 You can see `APL DOCUMENT TREE` and `APL COMPONENT DETAILS` tree view in `EXPLORER` tab.
@@ -59,7 +63,6 @@ Extension just read file contents and integrate to original APL json file. So it
 
 ## Future works
 
-- Introduce APL Suggester
-- Reload button
 - GUI editor
 - Introduce Vitest
+- Create new document command
