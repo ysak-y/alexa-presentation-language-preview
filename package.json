@@ -51,7 +51,8 @@
     "watch": "tsc -watch -p ./",
     "pretest": "yarn run compile && yarn run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js",
+    "test": "yarn run test:e2e && yarn run test:unit",
+    "test:e2e": "node ./out/test/runTest.js",
     "test:unit": "ts-mocha ./src/test/suite/unit/**/*.test.ts"
   },
   "repository": {
