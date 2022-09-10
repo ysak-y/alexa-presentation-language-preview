@@ -64,5 +64,4 @@ Extension just read file contents and integrate to original APL json file. So it
 ## Future works
 
 - GUI editor
-- Introduce Vitest
 - Create new document command
