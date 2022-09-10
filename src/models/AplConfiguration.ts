@@ -44,7 +44,7 @@ export class AplConfiguration {
     const newPackageJson: JsonValue[] = [];
     if (pacakgeJson && isAplPackageArray(pacakgeJson)) {
       pacakgeJson.forEach((p: AplPackageImport) => {
-        if (!p.source) {
+        if (!p.source || !p.source.startsWith("./")) {
           newPackageJson.push(JSON.parse(JSON.stringify(p)));
           return;
         }
@@ -67,17 +67,17 @@ export class AplConfiguration {
 
           aplPayload.document[k] = merge(
             true,
-            aplPayload.document[k],
-            document[k]
+            document[k],
+            aplPayload.document[k]
           );
         });
       });
 
       // newPackageJson doesn't include local pacakge imports because would happen error while rendering APL document
       aplPayload.document["import"] = newPackageJson;
-
-      this.aplPayload = aplPayload;
     }
+
+    this.aplPayload = aplPayload;
   }
 
   private loadLocalPackage(packagePath: string) {
