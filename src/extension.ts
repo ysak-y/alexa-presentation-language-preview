@@ -51,6 +51,14 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
+      if (aplEditor.document.isUntitled === true) {
+        vscode.window.showInformationMessage(
+          "Please save the file before previewing APL"
+        );
+        disposable.dispose();
+        return;
+      }
+
       let aplPreviewWebviewPanel: AplPreviewWebviewPanel | undefined =
         new AplPreviewWebviewPanel(context, aplEditor);
 
