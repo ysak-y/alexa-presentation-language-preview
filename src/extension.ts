@@ -84,9 +84,6 @@ export async function activate(context: vscode.ExtensionContext) {
       await new AplPayloadRepository(context).update(
         JSON.parse(document.getText())
       );
-      vscode.commands.executeCommand(
-        "alexa-presentation-language-preview.refreshAplDocumentTreeView"
-      );
     }
   });
 

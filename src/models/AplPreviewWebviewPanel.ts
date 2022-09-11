@@ -123,7 +123,7 @@ export class AplPreviewWebviewPanel {
 
               // TODO Move AplDocumentTreeView configurations to other places
               const aplDocumentTreeView = new AplDocumentTreeView(
-                this.aplConfiguration
+                extensionContext
               );
               vscode.window.registerTreeDataProvider(
                 "aplDocumentTree",
@@ -132,17 +132,6 @@ export class AplPreviewWebviewPanel {
               vscode.window.createTreeView("aplDocumentTree", {
                 treeDataProvider: aplDocumentTreeView,
               });
-
-              const refreshAplDocumentTreeViewDisposable =
-                vscode.commands.registerCommand(
-                  "alexa-presentation-language-preview.refreshAplDocumentTreeView",
-                  async () => {
-                    aplDocumentTreeView.refresh();
-                  }
-                );
-              extensionContext.subscriptions.push(
-                refreshAplDocumentTreeViewDisposable
-              );
 
               // TODO Move AplComponentDetailsTreeView configurations to other places
               // TODO Update content when save json

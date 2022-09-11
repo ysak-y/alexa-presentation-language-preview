@@ -1,11 +1,16 @@
+import { aplPayloadUpdateEventEmitter } from "./../utils/eventEmitters";
 import * as vscode from "vscode";
 import { JsonType } from "../utils/JsonUtils";
-import { AplConfiguration } from "../models/AplConfiguration";
+import { AplPayloadRepository } from "../repositories/AplPayloadRepository";
 
 export class AplDocumentTreeView
   implements vscode.TreeDataProvider<AplComponent>
 {
-  constructor(private aplConfiguration: AplConfiguration) {}
+  constructor(private extensionContext: vscode.ExtensionContext) {
+    aplPayloadUpdateEventEmitter.event(() => {
+      this.refresh();
+    });
+  }
 
   getTreeItem(element: AplComponent): vscode.TreeItem {
     return element;
@@ -41,9 +46,8 @@ export class AplDocumentTreeView
         : [];
       return Promise.resolve(childComponents);
     } else {
-      const mainTemplate = this.aplConfiguration.aplPayload.document[
-        "mainTemplate"
-      ] as JsonType;
+      const aplPayload = new AplPayloadRepository(this.extensionContext).get();
+      const mainTemplate = aplPayload.document["mainTemplate"] as JsonType;
       if (mainTemplate) {
         const collapsibleState =
           mainTemplate.length === 0
