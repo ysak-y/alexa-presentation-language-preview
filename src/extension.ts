@@ -1,6 +1,7 @@
 import { AplPreviewWebviewPanel } from "./models/AplPreviewWebviewPanel";
 import * as vscode from "vscode";
 import { getDefaultViewport, getViewportProfiles } from "apl-suggester";
+const templateDirectiveJson = require("../assets/template-directive.json");
 
 function buildViewportStatusBarItem(): vscode.StatusBarItem {
   const statusBarItem = vscode.window.createStatusBarItem();
@@ -14,6 +15,29 @@ function buildViewportStatusBarItem(): vscode.StatusBarItem {
 
 export function activate(context: vscode.ExtensionContext) {
   const statusBarItem = buildViewportStatusBarItem();
+
+  let aplDirectiveDisposable = vscode.commands.registerCommand(
+    "alexa-presentation-language-preview.createAplDirective",
+    async () => {
+      const editorViewColumn = vscode.ViewColumn.Active
+        ? vscode.ViewColumn.Active
+        : vscode.ViewColumn.One;
+
+      const document = await vscode.workspace.openTextDocument();
+      const editor = await vscode.window.showTextDocument(
+        document,
+        editorViewColumn
+      );
+
+      editor.edit((editBuilder) => {
+        editBuilder.insert(
+          new vscode.Position(0, 0),
+          JSON.stringify(templateDirectiveJson, null, 4)
+        );
+      });
+    }
+  );
+  context.subscriptions.push(aplDirectiveDisposable);
 
   let disposable = vscode.commands.registerCommand(
     "alexa-presentation-language-preview.previewApl",
