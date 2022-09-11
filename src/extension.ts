@@ -13,6 +13,8 @@ function buildViewportStatusBarItem(): vscode.StatusBarItem {
 }
 
 export function activate(context: vscode.ExtensionContext) {
+  const statusBarItem = buildViewportStatusBarItem();
+
   let disposable = vscode.commands.registerCommand(
     "alexa-presentation-language-preview.previewApl",
     () => {
@@ -27,7 +29,6 @@ export function activate(context: vscode.ExtensionContext) {
 
       let aplPreviewWebviewPanel: AplPreviewWebviewPanel | undefined =
         new AplPreviewWebviewPanel(context, aplEditor);
-      const statusBarItem = buildViewportStatusBarItem();
 
       const selectViewportDisposable = vscode.commands.registerCommand(
         "alexa-presentation-language-preview.selectViewport",
