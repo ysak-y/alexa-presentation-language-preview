@@ -2,7 +2,7 @@
   "name": "alexa-presentation-language-preview",
   "displayName": "Alexa Presentation Language Preview",
   "description": "Unofficial preview tool for Alexa Presentation Language",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "engines": {
     "vscode": "^1.70.0"
   },
@@ -20,7 +20,8 @@
     "Testing"
   ],
   "activationEvents": [
-    "onCommand:alexa-presentation-language-preview.previewApl"
+    "onCommand:alexa-presentation-language-preview.previewApl",
+    "onCommand:alexa-presentation-language-preview.createAplDirective"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -28,6 +29,10 @@
       {
         "command": "alexa-presentation-language-preview.previewApl",
         "title": "Preview Alexa Presentation Language"
+      },
+      {
+        "command": "alexa-presentation-language-preview.createAplDirective",
+        "title": "Create new APL directive and preview window"
       }
     ],
     "views": {
