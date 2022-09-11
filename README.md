@@ -11,7 +11,13 @@ This extension supports live preview updating. So you can edit and check APL eas
 
 ## How to use it
 
-Open APL document json file on the VSCode, then call `Preview Amazon Presentation Language` command.
+### Generate new directive from template
+
+Call `Preview Amazon Presentation Language` command from Command Palette. Then generate new untitled file with the template directive.
+
+### Show preview of the APL directive file
+
+Open APL document json file on the VSCode, then call `Preview Amazon Presentation Language` command from Command Pallete.
 
 You can change viewport size by selecting viewport on the status bar.
 
@@ -64,4 +70,3 @@ Extension just read file contents and integrate to original APL json file. So it
 ## Future works
 
 - GUI editor
-- Create new document command
