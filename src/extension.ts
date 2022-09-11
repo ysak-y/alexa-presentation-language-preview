@@ -22,10 +22,13 @@ export function activate(context: vscode.ExtensionContext) {
   );
   context.subscriptions.push(aplDirectiveDisposable);
 
+  let aplEditor: vscode.TextEditor | undefined;
+  let aplPreviewWebviewPanel: AplPreviewWebviewPanel | undefined;
+
   let disposable = vscode.commands.registerCommand(
     "alexa-presentation-language-preview.previewApl",
     () => {
-      let aplEditor = vscode.window.activeTextEditor;
+      aplEditor = vscode.window.activeTextEditor;
       if (!aplEditor) {
         vscode.window.showInformationMessage(
           "You need to focus the text window at first when execute this command"
@@ -40,77 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      let aplPreviewWebviewPanel: AplPreviewWebviewPanel | undefined =
-        new AplPreviewWebviewPanel(context, aplEditor);
-
-      const selectViewportDisposable = vscode.commands.registerCommand(
-        "alexa-presentation-language-preview.selectViewport",
-        async () => {
-          // Ask ViewportProfile name to set
-          const viewportProfiles = getViewportProfiles()
-            .map((v) => {
-              return {
-                label: v.name,
-                description: `${v.exampleDevices.length} profiles`,
-              } as vscode.QuickPickItem;
-            })
-            .valueSeq()
-            .toArray();
-
-          const selectedViewportProfileName = await vscode.window.showQuickPick(
-            viewportProfiles
-          );
-
-          if (!selectedViewportProfileName) {
-            return;
-          }
-
-          const selectedViewportProfile = getViewportProfiles().find(
-            (v) => v.name === selectedViewportProfileName.label
-          );
-
-          // Ask Viewport name to set
-          const viewports = selectedViewportProfile?.exampleDevices.map((d) => {
-            return {
-              label: d.name,
-            } as vscode.QuickPickItem;
-          });
-
-          if (!viewports) {
-            return;
-          }
-
-          const selectedViewportName = await vscode.window.showQuickPick(
-            viewports
-          );
-          const newViewport = selectedViewportProfile?.exampleDevices.find(
-            (d) => d.name === selectedViewportName?.label
-          );
-
-          if (!newViewport) {
-            return;
-          }
-
-          // Update Webview with new viewport
-          if (aplPreviewWebviewPanel) {
-            aplPreviewWebviewPanel.aplConfiguration.viewport = newViewport;
-            aplPreviewWebviewPanel.updateAplPreview();
-            statusBarItem.text = selectedViewportProfileName.label;
-          }
-        }
-      );
-      context.subscriptions.push(selectViewportDisposable);
-
-      vscode.workspace.onDidCloseTextDocument((document) => {
-        if (document.uri === aplEditor?.document.uri) {
-          aplPreviewWebviewPanel?.webviewPanel.dispose();
-          aplPreviewWebviewPanel = undefined;
-          statusBarItem.dispose();
-          selectViewportDisposable.dispose();
-          aplEditor = undefined;
-        }
-      });
-
+      aplPreviewWebviewPanel = new AplPreviewWebviewPanel(context, aplEditor);
       aplPreviewWebviewPanel.webviewPanel.onDidDispose(
         () => {
           aplPreviewWebviewPanel = undefined;
@@ -120,28 +53,88 @@ export function activate(context: vscode.ExtensionContext) {
         null,
         context.subscriptions
       );
-
-      vscode.workspace.onDidSaveTextDocument((document) => {
-        try {
-          if (
-            document.uri === aplEditor?.document.uri &&
-            aplPreviewWebviewPanel
-          ) {
-            aplPreviewWebviewPanel.updateAplPayload(
-              JSON.parse(document.getText())
-            );
-            aplPreviewWebviewPanel.updateAplPreview();
-            vscode.commands.executeCommand(
-              "alexa-presentation-language-preview.refreshAplDocumentTreeView"
-            );
-          }
-        } catch (e) {
-          vscode.window.showInformationMessage("Your json seems to be invalid");
-        }
-      });
     }
   );
 
+  vscode.workspace.onDidCloseTextDocument((document) => {
+    if (document.uri === aplEditor?.document.uri) {
+      aplPreviewWebviewPanel?.webviewPanel.dispose();
+      aplPreviewWebviewPanel = undefined;
+      statusBarItem.dispose();
+      selectViewportDisposable.dispose();
+      aplEditor = undefined;
+    }
+  });
+
+  vscode.workspace.onDidSaveTextDocument((document) => {
+    try {
+      if (document.uri === aplEditor?.document.uri && aplPreviewWebviewPanel) {
+        aplPreviewWebviewPanel.updateAplPayload(JSON.parse(document.getText()));
+        aplPreviewWebviewPanel.updateAplPreview();
+        vscode.commands.executeCommand(
+          "alexa-presentation-language-preview.refreshAplDocumentTreeView"
+        );
+      }
+    } catch (e) {
+      vscode.window.showInformationMessage("Your json seems to be invalid");
+    }
+  });
+
+  const selectViewportDisposable = vscode.commands.registerCommand(
+    "alexa-presentation-language-preview.selectViewport",
+    async () => {
+      // Ask ViewportProfile name to set
+      const viewportProfiles = getViewportProfiles()
+        .map((v) => {
+          return {
+            label: v.name,
+            description: `${v.exampleDevices.length} profiles`,
+          } as vscode.QuickPickItem;
+        })
+        .valueSeq()
+        .toArray();
+
+      const selectedViewportProfileName = await vscode.window.showQuickPick(
+        viewportProfiles
+      );
+
+      if (!selectedViewportProfileName) {
+        return;
+      }
+
+      const selectedViewportProfile = getViewportProfiles().find(
+        (v) => v.name === selectedViewportProfileName.label
+      );
+
+      // Ask Viewport name to set
+      const viewports = selectedViewportProfile?.exampleDevices.map((d) => {
+        return {
+          label: d.name,
+        } as vscode.QuickPickItem;
+      });
+
+      if (!viewports) {
+        return;
+      }
+
+      const selectedViewportName = await vscode.window.showQuickPick(viewports);
+      const newViewport = selectedViewportProfile?.exampleDevices.find(
+        (d) => d.name === selectedViewportName?.label
+      );
+
+      if (!newViewport) {
+        return;
+      }
+
+      // Update Webview with new viewport
+      if (aplPreviewWebviewPanel) {
+        aplPreviewWebviewPanel.aplConfiguration.viewport = newViewport;
+        aplPreviewWebviewPanel.updateAplPreview();
+        statusBarItem.text = selectedViewportProfileName.label;
+      }
+    }
+  );
+  context.subscriptions.push(selectViewportDisposable);
   context.subscriptions.push(disposable);
 }
 
