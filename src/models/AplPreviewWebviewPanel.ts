@@ -1,4 +1,8 @@
-import { aplViewportUpdateEventEmitter } from "./../utils/eventEmitters";
+import { AplPayloadRepository } from "./../repositories/AplPayloadRepository";
+import {
+  aplPayloadUpdateEventEmitter,
+  aplViewportUpdateEventEmitter,
+} from "./../utils/eventEmitters";
 import { AplDocumentTreeView } from "./../views/AplDocumentTreeView";
 import { LocalPackageImportError } from "./../utils/exceptions";
 import { AplConfiguration, AplPayload } from "./AplConfiguration";
@@ -12,6 +16,9 @@ jsonlint.parser.setPosEnabled(true);
 import * as fs from "fs";
 
 export class AplPreviewWebviewPanel {
+  // TODO Replace it by primitive apl payload and viewport because now can take both
+  // from EventEmitter.
+  // Now this class needs `setAndInflateAplPayload` in it but I can extract this feature as `LocalPackageImporter` class
   aplConfiguration: AplConfiguration;
   // 可能なら AplPreviewWebviewPanel と aplTextEditor の状態を管理するクラスを用意した方が良さそう
   // AplPreviewWebviewPanel はパネル生成時にアクティブなテキストエディタのみに連動させたいが、可能なら直接依存する形でエディタの状態を監視させたい
@@ -29,6 +36,11 @@ export class AplPreviewWebviewPanel {
     this.aplTextEditor = aplTextEditor;
     this.webviewPanel = this.configureWebviewPanel(extensionContext);
     this.configureDidReceiveMessageCallback(extensionContext);
+
+    aplPayloadUpdateEventEmitter.event((aplPayload) => {
+      this.updateAplPayload(aplPayload);
+      this.updateAplPreview();
+    });
 
     aplViewportUpdateEventEmitter.event((viewport) => {
       this.aplConfiguration.viewport = viewport;
@@ -96,17 +108,18 @@ export class AplPreviewWebviewPanel {
     return webviewPanel;
   }
 
-  private configureDidReceiveMessageCallback(
+  private async configureDidReceiveMessageCallback(
     extensionContext: vscode.ExtensionContext
   ) {
     this.webviewPanel.webview.onDidReceiveMessage(
-      (message) => {
+      async (message) => {
         switch (message.command) {
           case "initialize":
             const currentDocument = this.aplTextEditor.document;
             if (currentDocument) {
-              this.updateAplPayload(JSON.parse(currentDocument.getText()));
-              this.updateAplPreview();
+              await new AplPayloadRepository(extensionContext).update(
+                JSON.parse(currentDocument.getText())
+              );
 
               // TODO Move AplDocumentTreeView configurations to other places
               const aplDocumentTreeView = new AplDocumentTreeView(

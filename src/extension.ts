@@ -1,4 +1,5 @@
 import { AplViewportRepository } from "./repositories/AplViewportRepository";
+import { AplPayloadRepository } from "./repositories/AplPayloadRepository";
 import { AplPreviewWebviewPanel } from "./models/AplPreviewWebviewPanel";
 import * as vscode from "vscode";
 import { getDefaultViewport, getViewportProfiles } from "apl-suggester";
@@ -25,6 +26,7 @@ function buildViewportStatusBarItem(): vscode.StatusBarItem {
 
 export async function activate(context: vscode.ExtensionContext) {
   const statusBarItem = buildViewportStatusBarItem();
+  await new AplPayloadRepository(context).create();
   await new AplViewportRepository(context).create();
 
   const aplDirectiveDisposable = vscode.commands.registerCommand(
@@ -77,17 +79,14 @@ export async function activate(context: vscode.ExtensionContext) {
     }
   });
 
-  vscode.workspace.onDidSaveTextDocument((document) => {
-    try {
-      if (document.uri === aplEditor?.document.uri && aplPreviewWebviewPanel) {
-        aplPreviewWebviewPanel.updateAplPayload(JSON.parse(document.getText()));
-        aplPreviewWebviewPanel.updateAplPreview();
-        vscode.commands.executeCommand(
-          "alexa-presentation-language-preview.refreshAplDocumentTreeView"
-        );
-      }
-    } catch (e) {
-      vscode.window.showInformationMessage("Your json seems to be invalid");
+  vscode.workspace.onDidSaveTextDocument(async (document) => {
+    if (document.uri === aplEditor?.document.uri && aplPreviewWebviewPanel) {
+      await new AplPayloadRepository(context).update(
+        JSON.parse(document.getText())
+      );
+      vscode.commands.executeCommand(
+        "alexa-presentation-language-preview.refreshAplDocumentTreeView"
+      );
     }
   });
 
