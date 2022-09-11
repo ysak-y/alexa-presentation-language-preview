@@ -1,8 +1,9 @@
+import { AplPayloadRepository } from "./../repositories/AplPayloadRepository";
 import { JsonValue } from "./../utils/JsonUtils";
-import { AplConfiguration } from "./../models/AplConfiguration";
 import * as vscode from "vscode";
 import { isJsonType, JsonType } from "../utils/JsonUtils";
 import * as AplSuggestor from "apl-suggester";
+import { ExtensionContext } from "vscode";
 
 export class AplComponentDetailsTreeView
   implements
@@ -11,7 +12,7 @@ export class AplComponentDetailsTreeView
     >
 {
   constructor(
-    private aplConfiguration: AplConfiguration,
+    private extensionContext: ExtensionContext,
     private componentProperties: JsonType
   ) {}
 
@@ -49,9 +50,10 @@ export class AplComponentDetailsTreeView
       return Promise.resolve([]);
     }
 
+    const aplPayload = new AplPayloadRepository(this.extensionContext).get();
     const aplProperties = (
       await AplSuggestor.ComponentSchemaController.getInstance().getComponentSchema(
-        this.aplConfiguration.aplPayload,
+        aplPayload,
         componentType
       )
     )?.properties;

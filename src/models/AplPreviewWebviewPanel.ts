@@ -136,7 +136,7 @@ export class AplPreviewWebviewPanel {
               // TODO Move AplComponentDetailsTreeView configurations to other places
               // TODO Update content when save json
               const aplComponentDetailsTreeView =
-                new AplComponentDetailsTreeView(this.aplConfiguration, {});
+                new AplComponentDetailsTreeView(extensionContext, {});
               vscode.window.registerTreeDataProvider(
                 "aplComponentDetailsTree",
                 aplComponentDetailsTreeView
