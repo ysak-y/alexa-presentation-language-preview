@@ -1,7 +1,12 @@
+import { AplViewportRepository } from "./repositories/AplViewportRepository";
 import { AplPreviewWebviewPanel } from "./models/AplPreviewWebviewPanel";
 import * as vscode from "vscode";
 import { getDefaultViewport, getViewportProfiles } from "apl-suggester";
 import { createAplDirectiveHandler } from "./commandHandlers/createAplDirectiveHandler";
+import {
+  aplViewportUpdateEventEmitter,
+  selectedViewportNameUpdateEventEmitter,
+} from "./utils/eventEmitters";
 
 function buildViewportStatusBarItem(): vscode.StatusBarItem {
   const statusBarItem = vscode.window.createStatusBarItem();
@@ -9,12 +14,18 @@ function buildViewportStatusBarItem(): vscode.StatusBarItem {
   statusBarItem.name = "Select Viewport Profile";
   statusBarItem.text = getDefaultViewport().name;
   statusBarItem.show();
+  selectedViewportNameUpdateEventEmitter.event(
+    (selectedViewportProfileName) => {
+      statusBarItem.text = selectedViewportProfileName.label;
+    }
+  );
 
   return statusBarItem;
 }
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
   const statusBarItem = buildViewportStatusBarItem();
+  await new AplViewportRepository(context).create();
 
   const aplDirectiveDisposable = vscode.commands.registerCommand(
     "alexa-presentation-language-preview.createAplDirective",
@@ -126,12 +137,8 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      // Update Webview with new viewport
-      if (aplPreviewWebviewPanel) {
-        aplPreviewWebviewPanel.aplConfiguration.viewport = newViewport;
-        aplPreviewWebviewPanel.updateAplPreview();
-        statusBarItem.text = selectedViewportProfileName.label;
-      }
+      aplViewportUpdateEventEmitter.fire(newViewport);
+      selectedViewportNameUpdateEventEmitter.fire(selectedViewportProfileName);
     }
   );
   context.subscriptions.push(selectViewportDisposable);

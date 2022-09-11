@@ -1,3 +1,4 @@
+import { aplViewportUpdateEventEmitter } from "./../utils/eventEmitters";
 import { AplDocumentTreeView } from "./../views/AplDocumentTreeView";
 import { LocalPackageImportError } from "./../utils/exceptions";
 import { AplConfiguration, AplPayload } from "./AplConfiguration";
@@ -28,6 +29,11 @@ export class AplPreviewWebviewPanel {
     this.aplTextEditor = aplTextEditor;
     this.webviewPanel = this.configureWebviewPanel(extensionContext);
     this.configureDidReceiveMessageCallback(extensionContext);
+
+    aplViewportUpdateEventEmitter.event((viewport) => {
+      this.aplConfiguration.viewport = viewport;
+      this.updateAplPreview();
+    });
   }
 
   updateAplPayload(aplPayload: AplPayload) {
