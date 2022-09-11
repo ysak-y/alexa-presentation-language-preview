@@ -30,7 +30,6 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage(
           "You need to focus the text window at first when execute this command"
         );
-        disposable.dispose();
         return;
       }
 
@@ -38,7 +37,6 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage(
           "Please save the file before previewing APL"
         );
-        disposable.dispose();
         return;
       }
 
