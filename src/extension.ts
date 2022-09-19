@@ -1,3 +1,4 @@
+import { SelectedAplComponentRepository } from "./repositories/SelectedAplComponentRepository";
 import { AplViewportRepository } from "./repositories/AplViewportRepository";
 import { AplPayloadRepository } from "./repositories/AplPayloadRepository";
 import { AplPreviewWebviewPanel } from "./models/AplPreviewWebviewPanel";
@@ -81,9 +82,30 @@ export async function activate(context: vscode.ExtensionContext) {
 
   vscode.workspace.onDidSaveTextDocument(async (document) => {
     if (document.uri === aplEditor?.document.uri && aplPreviewWebviewPanel) {
-      await new AplPayloadRepository(context).update(
-        JSON.parse(document.getText())
+      const parsedJson = JSON.parse(document.getText());
+      await new AplPayloadRepository(context).update(parsedJson);
+
+      const selectedAplComponentRepository = new SelectedAplComponentRepository(
+        context
       );
+      const selectedAplComponent = selectedAplComponentRepository.get();
+      const selectedAplComponentJsonPath = selectedAplComponent?.path;
+      if (!selectedAplComponentJsonPath) {
+        return;
+      }
+
+      let jsonValue = parsedJson["document"];
+      const pathArray = selectedAplComponentJsonPath.split("/");
+      pathArray.forEach((a) => {
+        jsonValue = jsonValue[a];
+      });
+
+      if (jsonValue) {
+        selectedAplComponentRepository.update({
+          path: selectedAplComponentJsonPath,
+          properties: jsonValue,
+        });
+      }
     }
   });
 

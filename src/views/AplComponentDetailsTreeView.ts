@@ -1,3 +1,4 @@
+import { selectedAplComponentUpdateEmitter } from "./../utils/eventEmitters";
 import { AplPayloadRepository } from "./../repositories/AplPayloadRepository";
 import { JsonValue } from "./../utils/JsonUtils";
 import * as vscode from "vscode";
@@ -14,7 +15,11 @@ export class AplComponentDetailsTreeView
   constructor(
     private extensionContext: ExtensionContext,
     private componentProperties: JsonType
-  ) {}
+  ) {
+    selectedAplComponentUpdateEmitter.event((c) => {
+      this.updateAplProperty(c.properties);
+    });
+  }
 
   getTreeItem(
     element: AplComponentPropertyItem | AplComponentPropertyValueItem

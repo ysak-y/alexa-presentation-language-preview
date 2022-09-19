@@ -1,3 +1,4 @@
+import { SelectedAplComponentRepository } from "./../repositories/SelectedAplComponentRepository";
 import { AplPayloadRepository } from "./../repositories/AplPayloadRepository";
 import {
   aplPayloadUpdateEventEmitter,
@@ -152,9 +153,12 @@ export class AplPreviewWebviewPanel {
                     aplComponentProperty,
                     aplComponentJsonPath: string
                   ) => {
-                    aplComponentDetailsTreeView.updateAplProperty(
-                      aplComponentProperty
-                    );
+                    await new SelectedAplComponentRepository(
+                      extensionContext
+                    ).update({
+                      path: aplComponentJsonPath,
+                      properties: aplComponentProperty,
+                    });
 
                     const aplDocumentJson = fs.readFileSync(
                       this.aplTextEditor.document.uri.path,
