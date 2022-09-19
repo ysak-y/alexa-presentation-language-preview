@@ -32,10 +32,10 @@ export class AplDocumentTreeView
       const childComponents: AplComponent[] = items
         ? items.map((c: JsonType, idx: number) => {
             const label = (c["id"] ? c["id"] : c["type"]) as string;
-            const collapsibleState =
-              Object.keys(c).length === 0
-                ? vscode.TreeItemCollapsibleState.None
-                : vscode.TreeItemCollapsibleState.Expanded;
+            const childComponentItems = this.getItemsFromComponents(c);
+            const collapsibleState = childComponentItems?.items
+              ? vscode.TreeItemCollapsibleState.Expanded
+              : vscode.TreeItemCollapsibleState.None;
 
             let path = `${element.path}/${componentAndPropertyName.propertyName}`;
             if (isItemArray) {
