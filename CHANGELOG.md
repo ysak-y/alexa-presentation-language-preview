@@ -4,6 +4,10 @@ All notable changes to the "alexa-presentation-language-preview" extension will 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 0.3.2
+
+- BUG Fix
+
 ## 0.3.1
 
 - Make APL COMPONENT DETAILS tree view to sync data with document json
