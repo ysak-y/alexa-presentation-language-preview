@@ -13,7 +13,7 @@ This extension supports live preview updating. So you can edit and check APL eas
 
 ### Generate new directive from template
 
-Call `Preview Amazon Presentation Language` command from Command Palette. Then generate new untitled file with the template directive.
+Call `Create new APL directive and preview window` command from Command Palette. Then generate new untitled file with the template directive.
 
 ### Show preview of the APL directive file
 
