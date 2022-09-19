@@ -1,3 +1,4 @@
+import { SelectedAplComponent } from "./../repositories/SelectedAplComponentRepository";
 import { IViewport } from "apl-suggester";
 import { AplPayload } from "./../repositories/AplPayloadRepository";
 import { EventEmitter, QuickPickItem } from "vscode";
@@ -8,3 +9,5 @@ export const aplViewportUpdateEventEmitter: EventEmitter<IViewport> =
   new EventEmitter<IViewport>();
 export const selectedViewportNameUpdateEventEmitter: EventEmitter<QuickPickItem> =
   new EventEmitter<QuickPickItem>();
+export const selectedAplComponentUpdateEmitter: EventEmitter<SelectedAplComponent> =
+  new EventEmitter<SelectedAplComponent>();
