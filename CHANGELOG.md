@@ -4,6 +4,10 @@ All notable changes to the "alexa-presentation-language-preview" extension will 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 0.3.1
+
+- Make APL COMPONENT DETAILS tree view to sync data with document json
+
 ## 0.3.0
 
 - Introduce the feature that generating new APL directive file from the template
