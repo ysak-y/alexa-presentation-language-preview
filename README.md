@@ -65,7 +65,9 @@ Extension just read file contents and integrate to original APL json file. So it
 
 ## Demo
 
-<img src="usage.gif" width="100%">
+You can see demo only in https://github.com/ysak-y/alexa-presentation-language-preview
+
+https://user-images.githubusercontent.com/5585662/190978888-f9bf695e-1a7f-44ce-bc95-e4fc35c4b7e4.mp4
 
 ## Future works
 
