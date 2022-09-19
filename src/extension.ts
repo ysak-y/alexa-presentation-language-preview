@@ -82,7 +82,16 @@ export async function activate(context: vscode.ExtensionContext) {
 
   vscode.workspace.onDidSaveTextDocument(async (document) => {
     if (document.uri === aplEditor?.document.uri && aplPreviewWebviewPanel) {
-      const parsedJson = JSON.parse(document.getText());
+      let parsedJson;
+      try {
+        parsedJson = JSON.parse(document.getText());
+      } catch (e) {
+        vscode.window.showInformationMessage(
+          "Can't parse json. Please check whether your json file is valid"
+        );
+        return;
+      }
+
       await new AplPayloadRepository(context).update(parsedJson);
 
       const selectedAplComponentRepository = new SelectedAplComponentRepository(
