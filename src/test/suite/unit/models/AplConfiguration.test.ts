@@ -41,6 +41,74 @@ describe("AplConfiguration", () => {
       expect(aplConfiguration.aplPayload).deep.equal(newPayload);
     });
 
+    it("ignores import element if 'source' property starts with 'https://'", () => {
+      const newPayload = {
+        document: {
+          import: [
+            {
+              name: "localPackage",
+              version: "1.0.0",
+              source: "./local-package.json",
+            },
+            {
+              name: "remote-package",
+              version: "1.0.0",
+              source: "https://example.com",
+            },
+          ],
+          mainTemplate: {},
+        },
+        datasources: {},
+      };
+
+      sinon.stub(fs, "existsSync").returns(true);
+      sinon.stub(fs, "readFileSync").returns(Buffer.from(JSON.stringify({})));
+
+      const aplConfiguration = new AplConfiguration();
+      aplConfiguration.setAndInflateAplPayload("./", newPayload);
+      expect(aplConfiguration.aplPayload.document["import"]).deep.equal([
+        {
+          name: "remote-package",
+          version: "1.0.0",
+          source: "https://example.com",
+        },
+      ]);
+    });
+
+    it("ignores import element if 'source' property starts with 'http://'", () => {
+      const newPayload = {
+        document: {
+          import: [
+            {
+              name: "localPackage",
+              version: "1.0.0",
+              source: "./local-package.json",
+            },
+            {
+              name: "remote-package",
+              version: "1.0.0",
+              source: "http://example.com",
+            },
+          ],
+          mainTemplate: {},
+        },
+        datasources: {},
+      };
+
+      sinon.stub(fs, "existsSync").returns(true);
+      sinon.stub(fs, "readFileSync").returns(Buffer.from(JSON.stringify({})));
+
+      const aplConfiguration = new AplConfiguration();
+      aplConfiguration.setAndInflateAplPayload("./", newPayload);
+      expect(aplConfiguration.aplPayload.document["import"]).deep.equal([
+        {
+          name: "remote-package",
+          version: "1.0.0",
+          source: "http://example.com",
+        },
+      ]);
+    });
+
     it("merges document from local if element has 'source' property and remove element from 'import'", () => {
       const targetDocument = {
         layouts: {},

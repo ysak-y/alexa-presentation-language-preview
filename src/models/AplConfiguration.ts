@@ -44,8 +44,11 @@ export class AplConfiguration {
     const newPackageJson: JsonValue[] = [];
     if (pacakgeJson && isAplPackageArray(pacakgeJson)) {
       pacakgeJson.forEach((p: AplPackageImport) => {
-        // TODO: Support other formats except "./" for indicating local directory
-        if (!p.source || !p.source.startsWith("./")) {
+        if (
+          !p.source ||
+          p.source.startsWith("https://") ||
+          p.source.startsWith("http://")
+        ) {
           newPackageJson.push(JSON.parse(JSON.stringify(p)));
           return;
         }
