@@ -54,6 +54,7 @@ export class AplConfiguration {
         }
 
         const document = this.loadLocalPackage(
+          // TODO: Doesn't support '~/' expression yet. Shoud support
           path.resolve(documentDirecotyrPath, p.source)
         );
 
