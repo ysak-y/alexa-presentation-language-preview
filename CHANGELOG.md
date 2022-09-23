@@ -4,6 +4,10 @@ All notable changes to the "alexa-presentation-language-preview" extension will 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 0.3.4
+
+- BUG Fix for local package import
+
 ## 0.3.3
 
 - BUG Fix
