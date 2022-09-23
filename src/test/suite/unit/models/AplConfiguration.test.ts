@@ -150,6 +150,45 @@ describe("AplConfiguration", () => {
       });
     });
 
+    it("doesn't merge if property doesn't have object value", () => {
+      const versionOfPayload = "2022.1";
+      const targetDocument = {
+        version: "1.9",
+      };
+      const newPayload = {
+        document: {
+          version: versionOfPayload,
+          import: [
+            {
+              name: "localPackage",
+              version: "1.0.0",
+              source: "./local-package.json",
+            },
+          ],
+          mainTemplate: {
+            items: [
+              {
+                type: "Container",
+              },
+            ],
+          },
+        },
+        datasources: {},
+      };
+
+      sinon.stub(fs, "existsSync").returns(true);
+      sinon
+        .stub(fs, "readFileSync")
+        .returns(Buffer.from(JSON.stringify(targetDocument)));
+
+      const aplConfiguration = new AplConfiguration();
+      aplConfiguration.setAndInflateAplPayload("./", newPayload);
+
+      expect(aplConfiguration.aplPayload.document["version"]).deep.equal(
+        versionOfPayload
+      );
+    });
+
     it("throws error if failed to load local package", () => {
       const newPayload = {
         document: {
