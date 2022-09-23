@@ -41,6 +41,7 @@ https://developer.amazon.com/en-US/docs/alexa/alexa-presentation-language/apl-pa
 
 You can import APL package from local directory by setting path to `source` property.
 For example, extension will import `your-own-package` from `./your-own-package.json`. You can set full path for source also.
+Now don't support `~/` like expression. Will support in the future.
 
 ```json
 {
