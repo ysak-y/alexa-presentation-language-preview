@@ -62,7 +62,10 @@ export class AplConfiguration {
         // Merge each porperty of the package
         Object.keys(document).forEach((k) => {
           // Shouldn't merge mainTemplate with packages
-          if (k === "mainTemplate") {
+          if (
+            k === "mainTemplate" ||
+            !(typeof document[k] === "object" && !Array.isArray(document[k]))
+          ) {
             return;
           }
 
