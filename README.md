@@ -72,4 +72,4 @@ https://user-images.githubusercontent.com/5585662/190978888-f9bf695e-1a7f-44ce-b
 
 ## Future works
 
-- GUI editor
+- Refactor AplPreviewWebviewPanel to extract some logics from configureDidReceiveMessageCallback
