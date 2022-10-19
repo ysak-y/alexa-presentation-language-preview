@@ -1,3 +1,8 @@
+import {
+  LocalPackageImporter,
+  AplPayload,
+} from "./../utils/LocalPackageImporter";
+import { IViewport } from "apl-suggester";
 import { SelectedAplComponentRepository } from "./../repositories/SelectedAplComponentRepository";
 import { AplPayloadRepository } from "./../repositories/AplPayloadRepository";
 import {
@@ -6,7 +11,6 @@ import {
 } from "./../utils/eventEmitters";
 import { AplDocumentTreeView } from "./../views/AplDocumentTreeView";
 import { LocalPackageImportError } from "./../utils/exceptions";
-import { AplConfiguration, AplPayload } from "./AplConfiguration";
 import * as vscode from "vscode";
 import { buildPreviewHtml } from "../utils/buildPreviewHtml";
 import { viewportCharacteristicsFromViewPort } from "../utils/viewportCharacteristicsFromViewPort";
@@ -15,28 +19,25 @@ import { AplComponentDetailsTreeView } from "../views/AplComponentDetailsTreeVie
 import * as jsonlint from "jsonlint-pos";
 jsonlint.parser.setPosEnabled(true);
 import * as fs from "fs";
+import { AplViewportRepository } from "../repositories/AplViewportRepository";
 
 export class AplPreviewWebviewPanel {
-  // TODO Replace it by primitive apl payload and viewport because now can take both
-  // from EventEmitter.
-  // Now this class needs `setAndInflateAplPayload` in it but I can extract this feature as `LocalPackageImporter` class
-  aplConfiguration: AplConfiguration;
   // 可能なら AplPreviewWebviewPanel と aplTextEditor の状態を管理するクラスを用意した方が良さそう
   // AplPreviewWebviewPanel はパネル生成時にアクティブなテキストエディタのみに連動させたいが、可能なら直接依存する形でエディタの状態を監視させたい
   aplTextEditor: vscode.TextEditor;
   webviewPanel: vscode.WebviewPanel;
+  viewport: IViewport;
+  aplPayload: AplPayload;
 
   constructor(
     extensionContext: vscode.ExtensionContext,
-    aplTextEditor: vscode.TextEditor,
-    aplConfiguration?: AplConfiguration
+    aplTextEditor: vscode.TextEditor
   ) {
-    this.aplConfiguration = aplConfiguration
-      ? aplConfiguration
-      : new AplConfiguration();
     this.aplTextEditor = aplTextEditor;
     this.webviewPanel = this.configureWebviewPanel(extensionContext);
     this.configureDidReceiveMessageCallback(extensionContext);
+    this.aplPayload = new AplPayloadRepository(extensionContext).get();
+    this.viewport = new AplViewportRepository(extensionContext).get();
 
     aplPayloadUpdateEventEmitter.event((aplPayload) => {
       this.updateAplPayload(aplPayload);
@@ -44,7 +45,7 @@ export class AplPreviewWebviewPanel {
     });
 
     aplViewportUpdateEventEmitter.event((viewport) => {
-      this.aplConfiguration.viewport = viewport;
+      this.viewport = viewport;
       this.updateAplPreview();
     });
   }
@@ -52,7 +53,7 @@ export class AplPreviewWebviewPanel {
   updateAplPayload(aplPayload: AplPayload) {
     const documentDirPath = path.dirname(this.aplTextEditor.document.uri.path);
     try {
-      this.aplConfiguration.setAndInflateAplPayload(
+      this.aplPayload = new LocalPackageImporter().inflateAplPayload(
         documentDirPath,
         aplPayload
       );
@@ -69,10 +70,10 @@ export class AplPreviewWebviewPanel {
 
   updateAplPreview() {
     this.webviewPanel.webview.postMessage({
-      document: JSON.stringify(this.aplConfiguration.aplPayload.document),
-      datasources: JSON.stringify(this.aplConfiguration.aplPayload.datasources),
+      document: JSON.stringify(this.aplPayload.document),
+      datasources: JSON.stringify(this.aplPayload.datasources),
       viewport: JSON.stringify(
-        viewportCharacteristicsFromViewPort(this.aplConfiguration.viewport)
+        viewportCharacteristicsFromViewPort(this.viewport)
       ),
     });
   }
@@ -169,7 +170,7 @@ export class AplPreviewWebviewPanel {
                       return;
                     }
 
-                    // Use text from file instead of using apl document in AplConfiguration
+                    // Use text from file instead of using apl document of this class
                     // because JSON.stringify() would produce some differences from original texts
                     const parsedJson =
                       jsonlint.parser.parse(aplDocumentJson)["document"];
