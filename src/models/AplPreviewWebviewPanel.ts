@@ -9,13 +9,11 @@ import {
   aplPayloadUpdateEventEmitter,
   aplViewportUpdateEventEmitter,
 } from "./../utils/eventEmitters";
-import { AplDocumentTreeView } from "./../views/AplDocumentTreeView";
 import { LocalPackageImportError } from "./../utils/exceptions";
 import * as vscode from "vscode";
 import { buildPreviewHtml } from "../utils/buildPreviewHtml";
 import { viewportCharacteristicsFromViewPort } from "../utils/viewportCharacteristicsFromViewPort";
 import * as path from "node:path";
-import { AplComponentDetailsTreeView } from "../views/AplComponentDetailsTreeView";
 import * as jsonlint from "jsonlint-pos";
 jsonlint.parser.setPosEnabled(true);
 import * as fs from "fs";
@@ -122,30 +120,6 @@ export class AplPreviewWebviewPanel {
               await new AplPayloadRepository(extensionContext).update(
                 JSON.parse(currentDocument.getText())
               );
-
-              // TODO Move AplDocumentTreeView configurations to other places
-              const aplDocumentTreeView = new AplDocumentTreeView(
-                extensionContext
-              );
-              vscode.window.registerTreeDataProvider(
-                "aplDocumentTree",
-                aplDocumentTreeView
-              );
-              vscode.window.createTreeView("aplDocumentTree", {
-                treeDataProvider: aplDocumentTreeView,
-              });
-
-              // TODO Move AplComponentDetailsTreeView configurations to other places
-              // TODO Update content when save json
-              const aplComponentDetailsTreeView =
-                new AplComponentDetailsTreeView(extensionContext, {});
-              vscode.window.registerTreeDataProvider(
-                "aplComponentDetailsTree",
-                aplComponentDetailsTreeView
-              );
-              vscode.window.createTreeView("aplComponentDetailsTree", {
-                treeDataProvider: aplComponentDetailsTreeView,
-              });
 
               const refreshAplComponentDetailsTreeViewDisposable =
                 vscode.commands.registerCommand(

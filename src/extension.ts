@@ -1,3 +1,5 @@
+import { AplComponentDetailsTreeView } from "./views/AplComponentDetailsTreeView";
+import { AplDocumentTreeView } from "./views/AplDocumentTreeView";
 import { SelectedAplComponentRepository } from "./repositories/SelectedAplComponentRepository";
 import { AplViewportRepository } from "./repositories/AplViewportRepository";
 import { AplPayloadRepository } from "./repositories/AplPayloadRepository";
@@ -25,10 +27,37 @@ function buildViewportStatusBarItem(): vscode.StatusBarItem {
   return statusBarItem;
 }
 
+function buildAplDocumentTreeView(context: vscode.ExtensionContext) {
+  const aplDocumentTreeView = new AplDocumentTreeView(context);
+  vscode.window.registerTreeDataProvider(
+    "aplDocumentTree",
+    aplDocumentTreeView
+  );
+  vscode.window.createTreeView("aplDocumentTree", {
+    treeDataProvider: aplDocumentTreeView,
+  });
+}
+
+function buildAplComponentDetailsTreeView(context: vscode.ExtensionContext) {
+  const aplComponentDetailsTreeView = new AplComponentDetailsTreeView(
+    context,
+    {}
+  );
+  vscode.window.registerTreeDataProvider(
+    "aplComponentDetailsTree",
+    aplComponentDetailsTreeView
+  );
+  vscode.window.createTreeView("aplComponentDetailsTree", {
+    treeDataProvider: aplComponentDetailsTreeView,
+  });
+}
+
 export async function activate(context: vscode.ExtensionContext) {
   const statusBarItem = buildViewportStatusBarItem();
   await new AplPayloadRepository(context).create();
   await new AplViewportRepository(context).create();
+  buildAplDocumentTreeView(context);
+  buildAplComponentDetailsTreeView(context);
 
   const aplDirectiveDisposable = vscode.commands.registerCommand(
     "alexa-presentation-language-preview.createAplDirective",
