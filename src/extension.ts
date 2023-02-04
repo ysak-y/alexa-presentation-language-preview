@@ -53,7 +53,6 @@ function buildAplComponentDetailsTreeView(context: vscode.ExtensionContext) {
 }
 
 export async function activate(context: vscode.ExtensionContext) {
-  const statusBarItem = buildViewportStatusBarItem();
   await new AplPayloadRepository(context).create();
   await new AplViewportRepository(context).create();
   buildAplDocumentTreeView(context);
@@ -71,6 +70,7 @@ export async function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
     "alexa-presentation-language-preview.previewApl",
     () => {
+      const statusBarItem = buildViewportStatusBarItem();
       aplEditor = vscode.window.activeTextEditor;
       if (!aplEditor) {
         vscode.window.showInformationMessage(
@@ -103,8 +103,6 @@ export async function activate(context: vscode.ExtensionContext) {
     if (document.uri === aplEditor?.document.uri) {
       aplPreviewWebviewPanel?.webviewPanel.dispose();
       aplPreviewWebviewPanel = undefined;
-      statusBarItem.dispose();
-      selectViewportDisposable.dispose();
       aplEditor = undefined;
     }
   });
