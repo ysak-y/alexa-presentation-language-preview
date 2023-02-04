@@ -4,6 +4,10 @@ All notable changes to the "alexa-presentation-language-preview" extension will 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 0.3.5
+
+- BUG Fix for viewport status bar show/hide logic.
+
 ## 0.3.4
 
 - BUG Fix for local package import
