@@ -339,10 +339,10 @@ anymatch@~3.1.2:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
-apl-suggester@^2022.1.0:
-  version "2022.1.0"
-  resolved "https://registry.yarnpkg.com/apl-suggester/-/apl-suggester-2022.1.0.tgz#ffd9d816d2b6bee8c224346e15ee5fd5a27ab268"
-  integrity sha512-25GA17w3+SvRqnZ50vyvkwCO8pwctvttlESbFAug8nDK7XdJtMRDto/DYZrSYtLTiXfrInQUlR6QtE6STaxekg==
+apl-suggester@^2022.2.0:
+  version "2022.2.0"
+  resolved "https://registry.yarnpkg.com/apl-suggester/-/apl-suggester-2022.2.0.tgz#1ca8a28ee89cd66c12d9bfdbcf9d8f8c38f6affa"
+  integrity sha512-bJhDMrIxHYfb3jOuKaX9NprZRfpVakE6CuYKbhy2mOCipZw0Rf4B4UAy9seQ5u7w+E0Az6rjTWhnFJT/QuMaiQ==
   dependencies:
     "@types/chai" "3.5.x"
     "@types/core-js" "2.5.x"
@@ -355,10 +355,10 @@ apl-suggester@^2022.1.0:
     ts-node "3.3.x"
     typescript "3.x"
 
-apl-viewhost-web@^2022.1.0:
-  version "2022.1.0"
-  resolved "https://registry.yarnpkg.com/apl-viewhost-web/-/apl-viewhost-web-2022.1.0.tgz#d50ede583c64bb22c94a315a915a554c56f6e2f9"
-  integrity sha512-7483M7dEtLykmoV3UlshhSnyMFn6Qh9cE+m3sbCTY29kxX1PLoUxA334BAWxFgV330OvO1ql7gi7FaPko+IVkQ==
+apl-viewhost-web@^2022.2.0:
+  version "2022.2.0"
+  resolved "https://registry.yarnpkg.com/apl-viewhost-web/-/apl-viewhost-web-2022.2.0.tgz#7949e96be7960db220709be3b98e24732ffd67be"
+  integrity sha512-udpNOkL4M9L68c0MnW6HyHvTJfbCIjSE83AYtfo34J3DoaJsJe5JdOoc6jTDA5L/Mfx5/ZdEBv/8ZFGAfNpljw==
 
 argparse@^2.0.1:
   version "2.0.1"
