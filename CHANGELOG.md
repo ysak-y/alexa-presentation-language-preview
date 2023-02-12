@@ -4,6 +4,10 @@ All notable changes to the "alexa-presentation-language-preview" extension will 
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 0.4.0
+
+- Introduce auto completion (Beta)
+
 ## 0.3.6
 
 - Support APL 2022.2
