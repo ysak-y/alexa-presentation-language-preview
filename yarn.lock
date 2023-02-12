@@ -1153,6 +1153,11 @@ json5@^1.0.1:
   dependencies:
     minimist "^1.2.0"
 
+jsonc-parser@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/jsonc-parser/-/jsonc-parser-3.2.0.tgz#31ff3f4c2b9793f89c67212627c51c6394f88e76"
+  integrity sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==
+
 jsonlint-pos@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/jsonlint-pos/-/jsonlint-pos-2.1.2.tgz#fb2febcaf5da3d1ca61eca2870184ebb6fd6bf12"
