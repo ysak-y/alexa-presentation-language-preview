@@ -27,7 +27,7 @@ export class AplPreviewWebviewPanel {
     extensionContext: vscode.ExtensionContext,
     aplTextEditor: vscode.TextEditor
   ) {
-    this.aplTextEditor = new AplTextEditor(aplTextEditor);
+    this.aplTextEditor = new AplTextEditor(aplTextEditor, extensionContext);
     this.webviewPanel = this.configureWebviewPanel(extensionContext);
     this.configureDidReceiveMessageCallback(extensionContext);
     this.aplPayload = new AplPayloadRepository(extensionContext).get();

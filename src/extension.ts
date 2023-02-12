@@ -71,6 +71,7 @@ export async function activate(context: vscode.ExtensionContext) {
     "alexa-presentation-language-preview.previewApl",
     () => {
       const statusBarItem = buildViewportStatusBarItem();
+      // TODO: Implement repository for AplTextEditor class and store and manage them to handle multiple text editors at once
       aplEditor = vscode.window.activeTextEditor;
       if (!aplEditor) {
         vscode.window.showInformationMessage(
@@ -89,6 +90,9 @@ export async function activate(context: vscode.ExtensionContext) {
       aplPreviewWebviewPanel = new AplPreviewWebviewPanel(context, aplEditor);
       aplPreviewWebviewPanel.webviewPanel.onDidDispose(
         () => {
+          // TODO: Call dispose for completionProvider only when text document is closed
+          // after implementing repository to store AplTextEditor
+          aplPreviewWebviewPanel?.aplTextEditor.completionProvider?.dispose();
           aplPreviewWebviewPanel = undefined;
           statusBarItem.dispose();
           selectViewportDisposable.dispose();
